@@ -46,7 +46,7 @@ local monsterNotifyConn = nil
 local autoLootConn = nil
 local autoOpenConn = nil
 
--- ИЗМЕНЕНО: имена монстров на русском
+-- Имена монстров на русском
 local monsterNames = {
     ["RushMoving"] = "Раш",
     ["AmbushMoving"] = "Амбуш",
@@ -68,7 +68,9 @@ local itemNames = {
     ["Vitamins"] = "Витамины",
     ["Smoothie"] = "Смузи",
     ["Candle"] = "Свеча",
-    ["Bandage"] = "Бандаж"
+    ["Bandage"] = "Бандаж",
+    ["Coin"] = "Монета",
+    ["Gold"] = "Золото"
 }
 
 -- Цвета для разных типов предметов
@@ -82,7 +84,9 @@ local itemColors = {
     ["Vitamins"] = Color3.fromRGB(255, 105, 180),
     ["Smoothie"] = Color3.fromRGB(255, 20, 147),
     ["Candle"] = Color3.fromRGB(255, 140, 0),
-    ["Bandage"] = Color3.fromRGB(255, 255, 255)
+    ["Bandage"] = Color3.fromRGB(255, 255, 255),
+    ["Coin"] = Color3.fromRGB(255, 215, 0),
+    ["Gold"] = Color3.fromRGB(255, 215, 0)
 }
 
 local defaultFOV = 70
@@ -161,78 +165,7 @@ local function removeESP(part)
     end)
 end
 
--- НОВОЕ: функция авто-лута
-local function setupAutoLoot()
-    if autoLootConn then autoLootConn:Disconnect() end
-    
-    autoLootConn = RunService.Heartbeat:Connect(function()
-        if not AutoLoot then return end
-        if not LocalPlayer or not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
-        
-        local currentRooms = Workspace:FindFirstChild("CurrentRooms")
-        if not currentRooms then return end
-        
-        local playerPos = LocalPlayer.Character.HumanoidRootPart.Position
-        
-        -- Ищем текущую комнату игрока
-        local currentRoom = nil
-        for _, room in pairs(currentRooms:GetChildren()) do
-            local door = room:FindFirstChild("Door")
-            if door and door.PrimaryPart then
-                local distance = (playerPos - door.PrimaryPart.Position).Magnitude
-                if distance < 50 then -- Радиус комнаты
-                    currentRoom = room
-                    break
-                end
-            end
-        end
-        
-        if not currentRoom then return end
-        
-        -- Ищем тумбочки в текущей комнате
-        local assets = currentRoom:FindFirstChild("Assets")
-        if assets then
-            for _, wardrobe in pairs(assets:GetChildren()) do
-                if wardrobe.Name == "Wardrobe" then
-                    local main = wardrobe:FindFirstChild("Main")
-                    if main then
-                        -- Пытаемся открыть тумбочку
-                        firetouchinterest(LocalPlayer.Character.HumanoidRootPart, main, 0)
-                        firetouchinterest(LocalPlayer.Character.HumanoidRootPart, main, 1)
-                    end
-                end
-            end
-            
-            -- Ищем предметы в комнате
-            for _, descendant in pairs(assets:GetDescendants()) do
-                if descendant:IsA("Model") then
-                    for engName, _ in pairs(itemNames) do
-                        if descendant.Name == engName then
-                            local part = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
-                            if part and (part.Position - playerPos).Magnitude < 20 then
-                                -- Подбираем предмет
-                                firetouchinterest(LocalPlayer.Character.HumanoidRootPart, part, 0)
-                                firetouchinterest(LocalPlayer.Character.HumanoidRootPart, part, 1)
-                            end
-                            break
-                        end
-                    end
-                    
-                    -- Ключи
-                    if descendant.Name == "KeyObtain" then
-                        local hitbox = descendant:FindFirstChild("Hitbox")
-                        if hitbox and (hitbox.Position - playerPos).Magnitude < 20 then
-                            firetouchinterest(LocalPlayer.Character.HumanoidRootPart, hitbox, 0)
-                            firetouchinterest(LocalPlayer.Character.HumanoidRootPart, hitbox, 1)
-                        end
-                    end
-                end
-            end
-        end
-    end)
-end
-
--- НОВОЕ: функция авто-открытия тумбочек
+-- ИСПРАВЛЕНО: функция авто-открытия маленьких тумбочек/ящиков
 local function setupAutoOpenDrawers()
     if autoOpenConn then autoOpenConn:Disconnect() end
     
@@ -244,21 +177,55 @@ local function setupAutoOpenDrawers()
         if not currentRooms then return end
         
         local playerPos = LocalPlayer.Character.HumanoidRootPart.Position
+        local playerRoot = LocalPlayer.Character.HumanoidRootPart
         
+        -- Проходим по всем комнатам
         for _, room in pairs(currentRooms:GetChildren()) do
+            -- Проверяем, находится ли игрок в этой комнате
             local door = room:FindFirstChild("Door")
             if door and door.PrimaryPart then
-                local distance = (playerPos - door.PrimaryPart.Position).Magnitude
-                if distance < 30 then -- В текущей комнате или рядом
+                local distanceToDoor = (playerPos - door.PrimaryPart.Position).Magnitude
+                
+                -- Если игрок рядом с дверью этой комнаты (внутри или рядом)
+                if distanceToDoor < 50 then
                     local assets = room:FindFirstChild("Assets")
                     if assets then
-                        for _, wardrobe in pairs(assets:GetChildren()) do
-                            if wardrobe.Name == "Wardrobe" then
-                                local main = wardrobe:FindFirstChild("Main")
-                                if main and (main.Position - playerPos).Magnitude < 15 then
-                                    -- Открываем тумбочку
-                                    firetouchinterest(LocalPlayer.Character.HumanoidRootPart, main, 0)
-                                    firetouchinterest(LocalPlayer.Character.HumanoidRootPart, main, 1)
+                        -- Ищем все маленькие тумбочки/ящики (не Wardrobe, а Drawers)
+                        for _, obj in pairs(assets:GetChildren()) do
+                            -- Разные названия для маленьких тумбочек
+                            if obj.Name == "Drawer" or 
+                               obj.Name:find("Drawer") or 
+                               obj.Name == "Crate" or
+                               obj.Name == "Box" or
+                               obj.Name:find("Chest") or
+                               obj.Name:find("Shelf") then
+                                
+                                -- Ищем часть, которую можно открыть
+                                local drawerPart = obj:FindFirstChild("Main") or 
+                                                  obj:FindFirstChild("Handle") or 
+                                                  obj:FindFirstChild("Lid") or
+                                                  obj:FindFirstChild("Top") or
+                                                  obj:FindFirstChildWhichIsA("BasePart")
+                                
+                                if drawerPart and (drawerPart.Position - playerPos).Magnitude < 20 then
+                                    -- Пытаемся открыть (симулируем клик/касание)
+                                    firetouchinterest(playerRoot, drawerPart, 0)
+                                    firetouchinterest(playerRoot, drawerPart, 1)
+                                    
+                                    -- Дополнительно симулируем нажатие на объект
+                                    if obj:FindFirstChild("ClickDetector") then
+                                        fireclickdetector(obj.ClickDetector)
+                                    end
+                                end
+                            end
+                            
+                            -- Также ищем предметы внутри тумбочек
+                            for _, item in pairs(obj:GetDescendants()) do
+                                if item:IsA("BasePart") and item.Name:find("Item") or item.Name:find("Coin") or item.Name:find("Gold") then
+                                    if (item.Position - playerPos).Magnitude < 15 then
+                                        firetouchinterest(playerRoot, item, 0)
+                                        firetouchinterest(playerRoot, item, 1)
+                                    end
                                 end
                             end
                         end
@@ -270,6 +237,78 @@ local function setupAutoOpenDrawers()
     end)
 end
 
+-- Функция авто-лута (предметы, ключи, золото)
+local function setupAutoLoot()
+    if autoLootConn then autoLootConn:Disconnect() end
+    
+    autoLootConn = RunService.Heartbeat:Connect(function()
+        if not AutoLoot then return end
+        if not LocalPlayer or not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
+        
+        local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+        if not currentRooms then return end
+        
+        local playerPos = LocalPlayer.Character.HumanoidRootPart.Position
+        local playerRoot = LocalPlayer.Character.HumanoidRootPart
+        
+        -- Ищем текущую комнату игрока
+        local currentRoom = nil
+        for _, room in pairs(currentRooms:GetChildren()) do
+            local door = room:FindFirstChild("Door")
+            if door and door.PrimaryPart then
+                local distance = (playerPos - door.PrimaryPart.Position).Magnitude
+                if distance < 50 then
+                    currentRoom = room
+                    break
+                end
+            end
+        end
+        
+        if not currentRoom then return end
+        
+        -- Собираем все предметы в комнате
+        for _, descendant in pairs(currentRoom:GetDescendants()) do
+            if descendant:IsA("BasePart") or descendant:IsA("Model") then
+                local itemPart = nil
+                local itemName = ""
+                
+                if descendant:IsA("Model") then
+                    for engName, rusName in pairs(itemNames) do
+                        if descendant.Name == engName or descendant.Name:find(engName) then
+                            itemPart = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
+                            itemName = rusName
+                            break
+                        end
+                    end
+                else
+                    for engName, rusName in pairs(itemNames) do
+                        if descendant.Name == engName or descendant.Name:find(engName) then
+                            itemPart = descendant
+                            itemName = rusName
+                            break
+                        end
+                    end
+                end
+                
+                if itemPart and (itemPart.Position - playerPos).Magnitude < 25 then
+                    firetouchinterest(playerRoot, itemPart, 0)
+                    firetouchinterest(playerRoot, itemPart, 1)
+                end
+                
+                -- Ключи
+                if descendant.Name == "KeyObtain" or descendant.Name:find("Key") then
+                    local hitbox = descendant:FindFirstChild("Hitbox") or descendant
+                    if hitbox and (hitbox.Position - playerPos).Magnitude < 25 then
+                        firetouchinterest(playerRoot, hitbox, 0)
+                        firetouchinterest(playerRoot, hitbox, 1)
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- Функция для поиска книг
 local function findBooks()
     if not ESPBooks then
         for _, part in pairs(trackedBooks) do removeESP(part) end
@@ -310,6 +349,7 @@ local function findBooks()
     end
 end
 
+-- Функция для поиска Figure
 local function findFigure()
     if not ESPMonsters then
         if trackedFigure50 then removeESP(trackedFigure50); trackedFigure50 = nil end
@@ -348,6 +388,7 @@ local function findFigure()
     end
 end
 
+-- Функция для поиска шкафов (где прятаться)
 local function findWardrobes()
     if not ESPWardrobes then
         for _, part in pairs(trackedWardrobes) do removeESP(part) end
@@ -374,6 +415,7 @@ local function findWardrobes()
     end
 end
 
+-- Функция для поиска ключей
 local function findKeys()
     if not ESPKeys then
         for _, part in pairs(trackedKeys) do removeESP(part) end
@@ -409,6 +451,7 @@ local function findKeys()
     end
 end
 
+-- Функция для поиска рычагов
 local function findLevers()
     if not ESPLevers then
         for _, part in pairs(trackedLevers) do removeESP(part) end
@@ -434,6 +477,7 @@ local function findLevers()
     end
 end
 
+-- Функция обновления ESP
 local function updateESP()
     while true do
         pcall(function()
@@ -503,7 +547,6 @@ local function updateESP()
                             if monster.Name == engName then
                                 local part = monster.PrimaryPart or monster:FindFirstChild("HumanoidRootPart") or monster:FindFirstChildWhichIsA("BasePart")
                                 if part and not part:FindFirstChild("ESPBox") then
-                                    -- ВОССТАНОВЛЕНО: красный цвет для монстров как в исходном коде
                                     createESP(part, Color3.fromRGB(255, 0, 0), "Монстр: " .. rusName, 1)
                                 end
                                 break
@@ -686,28 +729,7 @@ MainTab:CreateToggle({
     end,
 })
 
--- НОВОЕ: Авто-лут (предметы и ключи)
-MainTab:CreateToggle({
-    Name = "Авто-лут (предметы/ключи)",
-    CurrentValue = false,
-    Flag = "AutoLootV1",
-    Callback = function(Value)
-        AutoLoot = Value
-        if Value then
-            setupAutoLoot()
-            Rayfield:Notify({
-                Title = "Авто-лут включен",
-                Content = "Автоматически подбираю предметы и ключи",
-                Duration = 3,
-                Image = 4483362458
-            })
-        else
-            if autoLootConn then autoLootConn:Disconnect(); autoLootConn = nil end
-        end
-    end,
-})
-
--- НОВОЕ: Авто-открытие тумбочек
+-- ИСПРАВЛЕНО: Авто-открытие маленьких тумбочек/ящиков
 MainTab:CreateToggle({
     Name = "Авто-открытие тумбочек",
     CurrentValue = false,
@@ -716,14 +738,23 @@ MainTab:CreateToggle({
         AutoOpenDrawers = Value
         if Value then
             setupAutoOpenDrawers()
-            Rayfield:Notify({
-                Title = "Авто-открытие включено",
-                Content = "Автоматически открываю тумбочки",
-                Duration = 3,
-                Image = 4483362458
-            })
         else
             if autoOpenConn then autoOpenConn:Disconnect(); autoOpenConn = nil end
+        end
+    end,
+})
+
+-- Авто-лут (предметы, ключи, золото)
+MainTab:CreateToggle({
+    Name = "Авто-лут (предметы/ключи)",
+    CurrentValue = false,
+    Flag = "AutoLootV1",
+    Callback = function(Value)
+        AutoLoot = Value
+        if Value then
+            setupAutoLoot()
+        else
+            if autoLootConn then autoLootConn:Disconnect(); autoLootConn = nil end
         end
     end,
 })
