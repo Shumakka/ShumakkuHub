@@ -24,8 +24,6 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local VirtualUser = game:GetService("VirtualUser")
-local UserInputService = game:GetService("UserInputService")
 
 local ESPDoors = false
 local ESPKeys = false
@@ -36,15 +34,11 @@ local ESPPlayers = false
 local ESPBooks = false
 local ESPWardrobes = false
 local MonsterNotify = false
-local AutoLoot = false
-local AutoOpenDrawers = false
 
 local fullbrightConn = nil
 local fovConn = nil
 local speedConn = nil
 local monsterNotifyConn = nil
-local autoLootConn = nil
-local autoOpenConn = nil
 
 -- Имена монстров на русском
 local monsterNames = {
@@ -68,9 +62,7 @@ local itemNames = {
     ["Vitamins"] = "Витамины",
     ["Smoothie"] = "Смузи",
     ["Candle"] = "Свеча",
-    ["Bandage"] = "Бандаж",
-    ["Coin"] = "Монета",
-    ["Gold"] = "Золото"
+    ["Bandage"] = "Бандаж"
 }
 
 -- Цвета для разных типов предметов
@@ -84,9 +76,7 @@ local itemColors = {
     ["Vitamins"] = Color3.fromRGB(255, 105, 180),
     ["Smoothie"] = Color3.fromRGB(255, 20, 147),
     ["Candle"] = Color3.fromRGB(255, 140, 0),
-    ["Bandage"] = Color3.fromRGB(255, 255, 255),
-    ["Coin"] = Color3.fromRGB(255, 215, 0),
-    ["Gold"] = Color3.fromRGB(255, 215, 0)
+    ["Bandage"] = Color3.fromRGB(255, 255, 255)
 }
 
 local defaultFOV = 70
@@ -113,8 +103,8 @@ local function playAlertSound()
     end)
 end
 
--- Функция создания ESP
-local function createESP(part, color, name, sizeMultiplier, showText)
+-- Функция создания ESP с квадратным размером для предметов
+local function createESP(part, color, name, sizeMultiplier, showText, isItem)
     if not part or not part:IsA("BasePart") then return end
     
     sizeMultiplier = sizeMultiplier or 1
@@ -124,11 +114,21 @@ local function createESP(part, color, name, sizeMultiplier, showText)
         if part:FindFirstChild("ESPBox") then part.ESPBox:Destroy() end
         if part:FindFirstChild("ESPBillboard") then part.ESPBillboard:Destroy() end
         
+        local boxSize
+        
+        -- Для предметов делаем квадратный размер 0.6
+        if isItem then
+            local maxSize = math.max(part.Size.X, part.Size.Y, part.Size.Z)
+            boxSize = Vector3.new(maxSize * 0.6, maxSize * 0.6, maxSize * 0.6)
+        else
+            boxSize = part.Size * sizeMultiplier
+        end
+        
         local box = Instance.new("BoxHandleAdornment")
         box.Name = "ESPBox"
         box.Parent = part
         box.Adornee = part
-        box.Size = part.Size * sizeMultiplier
+        box.Size = boxSize
         box.Color3 = color
         box.Transparency = 0.3
         box.AlwaysOnTop = true
@@ -165,150 +165,6 @@ local function removeESP(part)
     end)
 end
 
--- ИСПРАВЛЕНО: функция авто-открытия маленьких тумбочек/ящиков
-local function setupAutoOpenDrawers()
-    if autoOpenConn then autoOpenConn:Disconnect() end
-    
-    autoOpenConn = RunService.Heartbeat:Connect(function()
-        if not AutoOpenDrawers then return end
-        if not LocalPlayer or not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
-        
-        local currentRooms = Workspace:FindFirstChild("CurrentRooms")
-        if not currentRooms then return end
-        
-        local playerPos = LocalPlayer.Character.HumanoidRootPart.Position
-        local playerRoot = LocalPlayer.Character.HumanoidRootPart
-        
-        -- Проходим по всем комнатам
-        for _, room in pairs(currentRooms:GetChildren()) do
-            -- Проверяем, находится ли игрок в этой комнате
-            local door = room:FindFirstChild("Door")
-            if door and door.PrimaryPart then
-                local distanceToDoor = (playerPos - door.PrimaryPart.Position).Magnitude
-                
-                -- Если игрок рядом с дверью этой комнаты (внутри или рядом)
-                if distanceToDoor < 50 then
-                    local assets = room:FindFirstChild("Assets")
-                    if assets then
-                        -- Ищем все маленькие тумбочки/ящики (не Wardrobe, а Drawers)
-                        for _, obj in pairs(assets:GetChildren()) do
-                            -- Разные названия для маленьких тумбочек
-                            if obj.Name == "Drawer" or 
-                               obj.Name:find("Drawer") or 
-                               obj.Name == "Crate" or
-                               obj.Name == "Box" or
-                               obj.Name:find("Chest") or
-                               obj.Name:find("Shelf") then
-                                
-                                -- Ищем часть, которую можно открыть
-                                local drawerPart = obj:FindFirstChild("Main") or 
-                                                  obj:FindFirstChild("Handle") or 
-                                                  obj:FindFirstChild("Lid") or
-                                                  obj:FindFirstChild("Top") or
-                                                  obj:FindFirstChildWhichIsA("BasePart")
-                                
-                                if drawerPart and (drawerPart.Position - playerPos).Magnitude < 20 then
-                                    -- Пытаемся открыть (симулируем клик/касание)
-                                    firetouchinterest(playerRoot, drawerPart, 0)
-                                    firetouchinterest(playerRoot, drawerPart, 1)
-                                    
-                                    -- Дополнительно симулируем нажатие на объект
-                                    if obj:FindFirstChild("ClickDetector") then
-                                        fireclickdetector(obj.ClickDetector)
-                                    end
-                                end
-                            end
-                            
-                            -- Также ищем предметы внутри тумбочек
-                            for _, item in pairs(obj:GetDescendants()) do
-                                if item:IsA("BasePart") and item.Name:find("Item") or item.Name:find("Coin") or item.Name:find("Gold") then
-                                    if (item.Position - playerPos).Magnitude < 15 then
-                                        firetouchinterest(playerRoot, item, 0)
-                                        firetouchinterest(playerRoot, item, 1)
-                                    end
-                                end
-                            end
-                        end
-                    end
-                    break
-                end
-            end
-        end
-    end)
-end
-
--- Функция авто-лута (предметы, ключи, золото)
-local function setupAutoLoot()
-    if autoLootConn then autoLootConn:Disconnect() end
-    
-    autoLootConn = RunService.Heartbeat:Connect(function()
-        if not AutoLoot then return end
-        if not LocalPlayer or not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
-        
-        local currentRooms = Workspace:FindFirstChild("CurrentRooms")
-        if not currentRooms then return end
-        
-        local playerPos = LocalPlayer.Character.HumanoidRootPart.Position
-        local playerRoot = LocalPlayer.Character.HumanoidRootPart
-        
-        -- Ищем текущую комнату игрока
-        local currentRoom = nil
-        for _, room in pairs(currentRooms:GetChildren()) do
-            local door = room:FindFirstChild("Door")
-            if door and door.PrimaryPart then
-                local distance = (playerPos - door.PrimaryPart.Position).Magnitude
-                if distance < 50 then
-                    currentRoom = room
-                    break
-                end
-            end
-        end
-        
-        if not currentRoom then return end
-        
-        -- Собираем все предметы в комнате
-        for _, descendant in pairs(currentRoom:GetDescendants()) do
-            if descendant:IsA("BasePart") or descendant:IsA("Model") then
-                local itemPart = nil
-                local itemName = ""
-                
-                if descendant:IsA("Model") then
-                    for engName, rusName in pairs(itemNames) do
-                        if descendant.Name == engName or descendant.Name:find(engName) then
-                            itemPart = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
-                            itemName = rusName
-                            break
-                        end
-                    end
-                else
-                    for engName, rusName in pairs(itemNames) do
-                        if descendant.Name == engName or descendant.Name:find(engName) then
-                            itemPart = descendant
-                            itemName = rusName
-                            break
-                        end
-                    end
-                end
-                
-                if itemPart and (itemPart.Position - playerPos).Magnitude < 25 then
-                    firetouchinterest(playerRoot, itemPart, 0)
-                    firetouchinterest(playerRoot, itemPart, 1)
-                end
-                
-                -- Ключи
-                if descendant.Name == "KeyObtain" or descendant.Name:find("Key") then
-                    local hitbox = descendant:FindFirstChild("Hitbox") or descendant
-                    if hitbox and (hitbox.Position - playerPos).Magnitude < 25 then
-                        firetouchinterest(playerRoot, hitbox, 0)
-                        firetouchinterest(playerRoot, hitbox, 1)
-                    end
-                end
-            end
-        end
-    end)
-end
-
--- Функция для поиска книг
 local function findBooks()
     if not ESPBooks then
         for _, part in pairs(trackedBooks) do removeESP(part) end
@@ -349,7 +205,6 @@ local function findBooks()
     end
 end
 
--- Функция для поиска Figure
 local function findFigure()
     if not ESPMonsters then
         if trackedFigure50 then removeESP(trackedFigure50); trackedFigure50 = nil end
@@ -388,7 +243,6 @@ local function findFigure()
     end
 end
 
--- Функция для поиска шкафов (где прятаться)
 local function findWardrobes()
     if not ESPWardrobes then
         for _, part in pairs(trackedWardrobes) do removeESP(part) end
@@ -415,7 +269,6 @@ local function findWardrobes()
     end
 end
 
--- Функция для поиска ключей
 local function findKeys()
     if not ESPKeys then
         for _, part in pairs(trackedKeys) do removeESP(part) end
@@ -433,7 +286,7 @@ local function findKeys()
             if keyObtain then
                 local hitbox = keyObtain:FindFirstChild("Hitbox")
                 if hitbox and hitbox:IsA("BasePart") and not hitbox:FindFirstChild("ESPBox") then
-                    createESP(hitbox, Color3.fromRGB(255, 255, 0), "Ключ", 0.5)
+                    createESP(hitbox, Color3.fromRGB(255, 255, 0), "Ключ", 0.5, true, true)
                     table.insert(trackedKeys, hitbox)
                 end
             end
@@ -442,7 +295,7 @@ local function findKeys()
                 if child.Name == "KeyObtain" and child:IsA("Model") then
                     local hitbox = child:FindFirstChild("Hitbox")
                     if hitbox and hitbox:IsA("BasePart") and not hitbox:FindFirstChild("ESPBox") then
-                        createESP(hitbox, Color3.fromRGB(255, 255, 0), "Ключ", 0.5)
+                        createESP(hitbox, Color3.fromRGB(255, 255, 0), "Ключ", 0.5, true, true)
                         table.insert(trackedKeys, hitbox)
                     end
                 end
@@ -451,7 +304,6 @@ local function findKeys()
     end
 end
 
--- Функция для поиска рычагов
 local function findLevers()
     if not ESPLevers then
         for _, part in pairs(trackedLevers) do removeESP(part) end
@@ -477,7 +329,6 @@ local function findLevers()
     end
 end
 
--- Функция обновления ESP
 local function updateESP()
     while true do
         pcall(function()
@@ -500,7 +351,7 @@ local function updateESP()
                 end
             end
             
-            -- Предметы
+            -- Предметы (квадратный размер)
             if ESPItems then
                 for _, room in pairs(currentRooms:GetChildren()) do
                     for _, descendant in pairs(room:GetDescendants()) do
@@ -510,7 +361,8 @@ local function updateESP()
                                     local part = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
                                     if part and not part:FindFirstChild("ESPBox") then
                                         local color = itemColors[engName] or Color3.fromRGB(128, 128, 0)
-                                        createESP(part, color, rusName, 1)
+                                        -- Передаем isItem = true для квадратного размера
+                                        createESP(part, color, rusName, 1, true, true)
                                     end
                                 end
                             end
@@ -725,36 +577,6 @@ MainTab:CreateToggle({
             end)
         else
             if monsterNotifyConn then monsterNotifyConn:Disconnect(); monsterNotifyConn = nil end
-        end
-    end,
-})
-
--- ИСПРАВЛЕНО: Авто-открытие маленьких тумбочек/ящиков
-MainTab:CreateToggle({
-    Name = "Авто-открытие тумбочек",
-    CurrentValue = false,
-    Flag = "AutoOpenDrawersV1",
-    Callback = function(Value)
-        AutoOpenDrawers = Value
-        if Value then
-            setupAutoOpenDrawers()
-        else
-            if autoOpenConn then autoOpenConn:Disconnect(); autoOpenConn = nil end
-        end
-    end,
-})
-
--- Авто-лут (предметы, ключи, золото)
-MainTab:CreateToggle({
-    Name = "Авто-лут (предметы/ключи)",
-    CurrentValue = false,
-    Flag = "AutoLootV1",
-    Callback = function(Value)
-        AutoLoot = Value
-        if Value then
-            setupAutoLoot()
-        else
-            if autoLootConn then autoLootConn:Disconnect(); autoLootConn = nil end
         end
     end,
 })
