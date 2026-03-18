@@ -6,7 +6,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Shumakku (DOORS)",
-    LoadingTitle = "Shumakku загружается...",
+    LoadingTitle = "Загрузка Shumakku...",
     LoadingSubtitle = "TG: @ShumakkuScript",
     ConfigurationSaving = {
         Enabled = true,
@@ -24,6 +24,8 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+local UserInputService = game:GetService("UserInputService")
 
 local ESPDoors = false
 local ESPKeys = false
@@ -34,13 +36,17 @@ local ESPPlayers = false
 local ESPBooks = false
 local ESPWardrobes = false
 local MonsterNotify = false
+local AutoLoot = false
+local AutoOpenDrawers = false
 
 local fullbrightConn = nil
 local fovConn = nil
 local speedConn = nil
 local monsterNotifyConn = nil
+local autoLootConn = nil
+local autoOpenConn = nil
 
--- ИЗМЕНЕНО: имена монстров на русском (для отображения в ESP)
+-- ИЗМЕНЕНО: имена монстров на русском
 local monsterNames = {
     ["RushMoving"] = "Раш",
     ["AmbushMoving"] = "Амбуш",
@@ -103,7 +109,7 @@ local function playAlertSound()
     end)
 end
 
--- ВОССТАНОВЛЕНО: функция создания ESP из старого кода (без изменений размеров)
+-- Функция создания ESP
 local function createESP(part, color, name, sizeMultiplier, showText)
     if not part or not part:IsA("BasePart") then return end
     
@@ -152,6 +158,115 @@ local function removeESP(part)
     pcall(function()
         if part:FindFirstChild("ESPBox") then part.ESPBox:Destroy() end
         if part:FindFirstChild("ESPBillboard") then part.ESPBillboard:Destroy() end
+    end)
+end
+
+-- НОВОЕ: функция авто-лута
+local function setupAutoLoot()
+    if autoLootConn then autoLootConn:Disconnect() end
+    
+    autoLootConn = RunService.Heartbeat:Connect(function()
+        if not AutoLoot then return end
+        if not LocalPlayer or not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
+        
+        local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+        if not currentRooms then return end
+        
+        local playerPos = LocalPlayer.Character.HumanoidRootPart.Position
+        
+        -- Ищем текущую комнату игрока
+        local currentRoom = nil
+        for _, room in pairs(currentRooms:GetChildren()) do
+            local door = room:FindFirstChild("Door")
+            if door and door.PrimaryPart then
+                local distance = (playerPos - door.PrimaryPart.Position).Magnitude
+                if distance < 50 then -- Радиус комнаты
+                    currentRoom = room
+                    break
+                end
+            end
+        end
+        
+        if not currentRoom then return end
+        
+        -- Ищем тумбочки в текущей комнате
+        local assets = currentRoom:FindFirstChild("Assets")
+        if assets then
+            for _, wardrobe in pairs(assets:GetChildren()) do
+                if wardrobe.Name == "Wardrobe" then
+                    local main = wardrobe:FindFirstChild("Main")
+                    if main then
+                        -- Пытаемся открыть тумбочку
+                        firetouchinterest(LocalPlayer.Character.HumanoidRootPart, main, 0)
+                        firetouchinterest(LocalPlayer.Character.HumanoidRootPart, main, 1)
+                    end
+                end
+            end
+            
+            -- Ищем предметы в комнате
+            for _, descendant in pairs(assets:GetDescendants()) do
+                if descendant:IsA("Model") then
+                    for engName, _ in pairs(itemNames) do
+                        if descendant.Name == engName then
+                            local part = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
+                            if part and (part.Position - playerPos).Magnitude < 20 then
+                                -- Подбираем предмет
+                                firetouchinterest(LocalPlayer.Character.HumanoidRootPart, part, 0)
+                                firetouchinterest(LocalPlayer.Character.HumanoidRootPart, part, 1)
+                            end
+                            break
+                        end
+                    end
+                    
+                    -- Ключи
+                    if descendant.Name == "KeyObtain" then
+                        local hitbox = descendant:FindFirstChild("Hitbox")
+                        if hitbox and (hitbox.Position - playerPos).Magnitude < 20 then
+                            firetouchinterest(LocalPlayer.Character.HumanoidRootPart, hitbox, 0)
+                            firetouchinterest(LocalPlayer.Character.HumanoidRootPart, hitbox, 1)
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- НОВОЕ: функция авто-открытия тумбочек
+local function setupAutoOpenDrawers()
+    if autoOpenConn then autoOpenConn:Disconnect() end
+    
+    autoOpenConn = RunService.Heartbeat:Connect(function()
+        if not AutoOpenDrawers then return end
+        if not LocalPlayer or not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
+        
+        local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+        if not currentRooms then return end
+        
+        local playerPos = LocalPlayer.Character.HumanoidRootPart.Position
+        
+        for _, room in pairs(currentRooms:GetChildren()) do
+            local door = room:FindFirstChild("Door")
+            if door and door.PrimaryPart then
+                local distance = (playerPos - door.PrimaryPart.Position).Magnitude
+                if distance < 30 then -- В текущей комнате или рядом
+                    local assets = room:FindFirstChild("Assets")
+                    if assets then
+                        for _, wardrobe in pairs(assets:GetChildren()) do
+                            if wardrobe.Name == "Wardrobe" then
+                                local main = wardrobe:FindFirstChild("Main")
+                                if main and (main.Position - playerPos).Magnitude < 15 then
+                                    -- Открываем тумбочку
+                                    firetouchinterest(LocalPlayer.Character.HumanoidRootPart, main, 0)
+                                    firetouchinterest(LocalPlayer.Character.HumanoidRootPart, main, 1)
+                                end
+                            end
+                        end
+                    end
+                    break
+                end
+            end
+        end
     end)
 end
 
@@ -233,7 +348,6 @@ local function findFigure()
     end
 end
 
--- ВОССТАНОВЛЕНО: оригинальная функция поиска шкафов из старого кода
 local function findWardrobes()
     if not ESPWardrobes then
         for _, part in pairs(trackedWardrobes) do removeESP(part) end
@@ -326,16 +440,21 @@ local function updateESP()
             local currentRooms = Workspace:FindFirstChild("CurrentRooms")
             if not currentRooms then return end
             
-            -- Двери (оригинальный размер из старого кода)
-if ESPDoors then
-    for _, room in pairs(currentRooms:GetChildren()) do
-        local door = room:FindFirstChild("Door")
-        if door and door.PrimaryPart and not door.PrimaryPart:FindFirstChild("ESPBox") then
-            local roomNum = tonumber(room.Name) or 0
-            createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), tostring(roomNum + 1), 1)
-        end
-    end
-end
+            -- Двери (только цифра)
+            if ESPDoors then
+                for _, room in pairs(currentRooms:GetChildren()) do
+                    local door = room:FindFirstChild("Door")
+                    if door and door.PrimaryPart and not door.PrimaryPart:FindFirstChild("ESPBox") then
+                        local roomNum = tonumber(room.Name) or 0
+                        createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), tostring(roomNum + 1), 1)
+                    end
+                end
+            else
+                for _, room in pairs(currentRooms:GetChildren()) do
+                    local door = room:FindFirstChild("Door")
+                    if door and door.PrimaryPart then removeESP(door.PrimaryPart) end
+                end
+            end
             
             -- Предметы
             if ESPItems then
@@ -384,6 +503,7 @@ end
                             if monster.Name == engName then
                                 local part = monster.PrimaryPart or monster:FindFirstChild("HumanoidRootPart") or monster:FindFirstChildWhichIsA("BasePart")
                                 if part and not part:FindFirstChild("ESPBox") then
+                                    -- ВОССТАНОВЛЕНО: красный цвет для монстров как в исходном коде
                                     createESP(part, Color3.fromRGB(255, 0, 0), "Монстр: " .. rusName, 1)
                                 end
                                 break
@@ -566,6 +686,48 @@ MainTab:CreateToggle({
     end,
 })
 
+-- НОВОЕ: Авто-лут (предметы и ключи)
+MainTab:CreateToggle({
+    Name = "Авто-лут (предметы/ключи)",
+    CurrentValue = false,
+    Flag = "AutoLootV1",
+    Callback = function(Value)
+        AutoLoot = Value
+        if Value then
+            setupAutoLoot()
+            Rayfield:Notify({
+                Title = "Авто-лут включен",
+                Content = "Автоматически подбираю предметы и ключи",
+                Duration = 3,
+                Image = 4483362458
+            })
+        else
+            if autoLootConn then autoLootConn:Disconnect(); autoLootConn = nil end
+        end
+    end,
+})
+
+-- НОВОЕ: Авто-открытие тумбочек
+MainTab:CreateToggle({
+    Name = "Авто-открытие тумбочек",
+    CurrentValue = false,
+    Flag = "AutoOpenDrawersV1",
+    Callback = function(Value)
+        AutoOpenDrawers = Value
+        if Value then
+            setupAutoOpenDrawers()
+            Rayfield:Notify({
+                Title = "Авто-открытие включено",
+                Content = "Автоматически открываю тумбочки",
+                Duration = 3,
+                Image = 4483362458
+            })
+        else
+            if autoOpenConn then autoOpenConn:Disconnect(); autoOpenConn = nil end
+        end
+    end,
+})
+
 MainTab:CreateToggle({
     Name = "Другие игроки (ESP)",
     CurrentValue = false,
@@ -669,7 +831,7 @@ end)
 
 Rayfield:Notify({
     Title = "Shumakku DOORS (Only Hotel)",
-    Content = "ТГК: @ShumakkuScript",
+    Content = "ТГК: ShumakkuScript",
     Duration = 8,
     Image = 4483362458
 })
