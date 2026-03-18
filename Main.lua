@@ -1,13 +1,13 @@
 -- Shumakku (DOORS)
 -- By Shumakku
--- Telegram: https://t.me/MakeinuHub
+-- Telegram: https://t.me/ShumakkuScript
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Shumakku (DOORS)",
-    LoadingTitle = " Shumakku загружается...",
-    LoadingSubtitle = "ТГК СО СКРИПТАМИ @ShumakkuScript",
+    LoadingTitle = "Загрузка Shumakku...",
+    LoadingSubtitle = "TG: @ShumakkuScript",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = nil,
@@ -24,6 +24,7 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
 
 local ESPDoors = false
 local ESPKeys = false
@@ -34,13 +35,17 @@ local ESPPlayers = false
 local ESPBooks = false
 local ESPWardrobes = false
 local MonsterNotify = false
+local SeekNotify = false
+local AntiAFK = false
 
 local fullbrightConn = nil
 local fovConn = nil
 local speedConn = nil
 local monsterNotifyConn = nil
+local seekNotifyConn = nil
+local antiAFKConn = nil
 
-local monsterNames = {"RushMoving", "AmbushMoving", "Eyes", "Halt", "SeekMoving", "A60", "A120", "Seek", "SeekChase"}
+local monsterNames = {"RushMoving", "AmbushMoving", "Eyes", "Halt", "A60", "A120"}
 
 -- Русские названия предметов
 local itemNames = {
@@ -94,7 +99,7 @@ local function playAlertSound()
     end)
 end
 
--- функция создания ESP с разными размерами для разных объектов
+-- функция создания ESP с увеличенными хитбоксами в 2 раза
 local function createESP(part, color, name, sizeMultiplier, showText, isItem)
     if not part or not part:IsA("BasePart") then return end
     sizeMultiplier = sizeMultiplier or 1
@@ -105,14 +110,13 @@ local function createESP(part, color, name, sizeMultiplier, showText, isItem)
         
         local boxSize
         
-        -- Для предметов делаем размер в 3-4 раза меньше
+        -- Для предметов делаем размер в 2 раза больше (было 0.3, стало 0.6)
         if isItem then
-            -- Берем минимальный размер предмета и уменьшаем
             local minSize = math.min(part.Size.X, part.Size.Y, part.Size.Z)
-            boxSize = Vector3.new(minSize * 0.3, minSize * 0.3, minSize * 0.3)
+            boxSize = Vector3.new(minSize * 0.6, minSize * 0.6, minSize * 0.6)
         else
-            -- Для остального (двери, шкафы, монстры) оставляем оригинальный размер
-            boxSize = part.Size * sizeMultiplier
+            -- Для остального увеличиваем в 2 раза
+            boxSize = part.Size * sizeMultiplier * 2
         end
         
         local box = Instance.new("BoxHandleAdornment")
@@ -152,6 +156,27 @@ local function removeESP(part)
     pcall(function()
         if part:FindFirstChild("ESPBox") then part.ESPBox:Destroy() end
         if part:FindFirstChild("ESPBillboard") then part.ESPBillboard:Destroy() end
+    end)
+end
+
+local function setupAntiAFK()
+    if antiAFKConn then antiAFKConn:Disconnect() end
+    
+    antiAFKConn = RunService.Heartbeat:Connect(function()
+        if AntiAFK and LocalPlayer and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            -- Имитируем движение камеры/мыши
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
+            
+            -- Небольшое случайное движение (чтобы не выглядеть как бот)
+            local humanoid = LocalPlayer.Character.Humanoid
+            if humanoid.MoveDirection.Magnitude < 0.1 then
+                local rootPart = LocalPlayer.Character.PrimaryPart
+                if rootPart then
+                    humanoid:MoveTo(rootPart.Position + Vector3.new(math.random(-2, 2), 0, math.random(-2, 2)), rootPart)
+                end
+            end
+        end
     end)
 end
 
@@ -233,6 +258,7 @@ local function findFigure()
     end
 end
 
+-- ВОССТАНОВЛЕНО: оригинальная функция поиска шкафов из старого кода (только отель)
 local function findWardrobes()
     if not ESPWardrobes then
         for _, part in pairs(trackedWardrobes) do removeESP(part) end
@@ -240,34 +266,23 @@ local function findWardrobes()
         return
     end
     
-    local function deepSearch(container, depth)
-        if depth > 5 then return end
-        
-        for _, child in pairs(container:GetChildren()) do
-            if child:IsA("Model") then
-                local nameLower = child.Name:lower()
-                if nameLower:find("wardrobe") or 
-                   nameLower:find("closet") or 
-                   nameLower:find("шкаф") or 
-                   nameLower:find("cabinet") or
-                   nameLower:find("shkaf") then
-                    
-                    local main = child:FindFirstChild("Main") or 
-                                child:FindFirstChild("Handle") or 
-                                child:FindFirstChild("Part") or
-                                child:FindFirstChildWhichIsA("BasePart")
-                    
+    local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+    if not currentRooms then return end
+    
+    for _, room in pairs(currentRooms:GetChildren()) do
+        local assets = room:FindFirstChild("Assets")
+        if assets then
+            for _, wardrobe in pairs(assets:GetChildren()) do
+                if wardrobe.Name == "Wardrobe" then
+                    local main = wardrobe:FindFirstChild("Main")
                     if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
                         createESP(main, Color3.fromRGB(224, 145, 76), "Шкаф", 1, true)
                         table.insert(trackedWardrobes, main)
                     end
                 end
             end
-            deepSearch(child, depth + 1)
         end
     end
-    
-    deepSearch(Workspace, 0)
 end
 
 local function findKeys()
@@ -325,13 +340,35 @@ local function findLevers()
     end
 end
 
+local function setupSeekNotification()
+    if seekNotifyConn then seekNotifyConn:Disconnect() end
+    
+    seekNotifyConn = RunService.Heartbeat:Connect(function()
+        local seekMoving = Workspace:FindFirstChild("SeekMoving")
+        local seekChase = Workspace:FindFirstChild("SeekChase")
+        
+        if (seekMoving or seekChase) and SeekNotify then
+            if not getgenv().lastSeekNotify or tick() - getgenv().lastSeekNotify > 10 then
+                getgenv().lastSeekNotify = tick()
+                playAlertSound()
+                Rayfield:Notify({
+                    Title = "СКРИТЧ АКТИВЕН!",
+                    Content = "ВНИМАНИЕ: Скритч преследует тебя!",
+                    Duration = 5,
+                    Image = 4483362458
+                })
+            end
+        end
+    end)
+end
+
 local function updateESP()
     while true do
         pcall(function()
             local currentRooms = Workspace:FindFirstChild("CurrentRooms")
             if not currentRooms then return end
             
-            -- Двери (оригинальный размер)
+            -- Двери
             if ESPDoors then
                 for _, room in pairs(currentRooms:GetChildren()) do
                     local door = room:FindFirstChild("Door")
@@ -559,12 +596,48 @@ MainTab:CreateToggle({
     end,
 })
 
+-- Отдельное оповещение о скритче
+MainTab:CreateToggle({
+    Name = "Оповещение о скритче",
+    CurrentValue = false,
+    Flag = "SeekNotifyV1",
+    Callback = function(Value)
+        SeekNotify = Value
+        if Value then
+            setupSeekNotification()
+        else
+            if seekNotifyConn then seekNotifyConn:Disconnect(); seekNotifyConn = nil end
+        end
+    end,
+})
+
 MainTab:CreateToggle({
     Name = "Другие игроки (ESP)",
     CurrentValue = false,
     Flag = "ESPPlayersV1",
     Callback = function(Value)
         ESPPlayers = Value
+    end,
+})
+
+-- НОВОЕ: Анти-AFK
+MainTab:CreateToggle({
+    Name = "Анти-AFK",
+    CurrentValue = false,
+    Flag = "AntiAFKV1",
+    Callback = function(Value)
+        AntiAFK = Value
+        if Value then
+            setupAntiAFK()
+            Rayfield:Notify({
+                Title = "Анти-AFK включен",
+                Content = "Можно отойти спокойно!",
+                Duration = 3,
+                Image = 4483362458
+            })
+        else
+            if antiAFKConn then antiAFKConn:Disconnect(); antiAFKConn = nil end
+        end
     end,
 })
 
@@ -626,7 +699,7 @@ MainTab:CreateButton({
     end,
 })
 
--- ИЗМЕНЕНО: Вкладка Автор (Telegram) с новыми уведомлениями
+-- Вкладка Автор (Telegram)
 AuthorTab:CreateButton({
     Name = "Telegram канал",
     Callback = function()
@@ -660,7 +733,6 @@ LocalPlayer.CharacterAdded:Connect(function()
     end
 end)
 
--- ИЗМЕНЕНО: Финальное уведомление
 Rayfield:Notify({
     Title = "Shumakku DOORS (Only Hotel)",
     Content = "ТГК: ShumakkuScript",
