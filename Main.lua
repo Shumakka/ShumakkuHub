@@ -63,16 +63,16 @@ local itemNames = {
 
 -- Цвета для разных типов предметов
 local itemColors = {
-    ["Crucifix"] = Color3.fromRGB(255, 215, 0),    -- Золотой
-    ["Flashlight"] = Color3.fromRGB(255, 255, 0),   -- Желтый
-    ["Lighter"] = Color3.fromRGB(255, 165, 0),      -- Оранжевый
-    ["Lockpick"] = Color3.fromRGB(192, 192, 192),   -- Серебряный
-    ["SkeletonKey"] = Color3.fromRGB(255, 255, 255), -- Белый
-    ["Battery"] = Color3.fromRGB(50, 205, 50),      -- Лаймовый
-    ["Vitamins"] = Color3.fromRGB(255, 105, 180),   -- Розовый
-    ["Smoothie"] = Color3.fromRGB(255, 20, 147),    -- Глубокий розовый
-    ["Candle"] = Color3.fromRGB(255, 140, 0),       -- Темно-оранжевый
-    ["Bandage"] = Color3.fromRGB(255, 255, 255)     -- Белый
+    ["Crucifix"] = Color3.fromRGB(255, 215, 0),
+    ["Flashlight"] = Color3.fromRGB(255, 255, 0),
+    ["Lighter"] = Color3.fromRGB(255, 165, 0),
+    ["Lockpick"] = Color3.fromRGB(192, 192, 192),
+    ["SkeletonKey"] = Color3.fromRGB(255, 255, 255),
+    ["Battery"] = Color3.fromRGB(50, 205, 50),
+    ["Vitamins"] = Color3.fromRGB(255, 105, 180),
+    ["Smoothie"] = Color3.fromRGB(255, 20, 147),
+    ["Candle"] = Color3.fromRGB(255, 140, 0),
+    ["Bandage"] = Color3.fromRGB(255, 255, 255)
 }
 
 local defaultFOV = 70
@@ -99,7 +99,7 @@ local function playAlertSound()
     end)
 end
 
--- функция создания ESP с увеличенными хитбоксами в 2 раза
+-- функция создания ESP
 local function createESP(part, color, name, sizeMultiplier, showText, isItem)
     if not part or not part:IsA("BasePart") then return end
     sizeMultiplier = sizeMultiplier or 1
@@ -110,12 +110,10 @@ local function createESP(part, color, name, sizeMultiplier, showText, isItem)
         
         local boxSize
         
-        -- Для предметов делаем размер в 2 раза больше (было 0.3, стало 0.6)
         if isItem then
             local minSize = math.min(part.Size.X, part.Size.Y, part.Size.Z)
             boxSize = Vector3.new(minSize * 0.6, minSize * 0.6, minSize * 0.6)
         else
-            -- Для остального увеличиваем в 2 раза
             boxSize = part.Size * sizeMultiplier * 2
         end
         
@@ -159,23 +157,16 @@ local function removeESP(part)
     end)
 end
 
+-- ИСПРАВЛЕННАЯ функция анти-AFK
 local function setupAntiAFK()
     if antiAFKConn then antiAFKConn:Disconnect() end
     
     antiAFKConn = RunService.Heartbeat:Connect(function()
         if AntiAFK and LocalPlayer and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-            -- Имитируем движение камеры/мыши
-            VirtualUser:CaptureController()
-            VirtualUser:ClickButton2(Vector2.new())
-            
-            -- Небольшое случайное движение (чтобы не выглядеть как бот)
-            local humanoid = LocalPlayer.Character.Humanoid
-            if humanoid.MoveDirection.Magnitude < 0.1 then
-                local rootPart = LocalPlayer.Character.PrimaryPart
-                if rootPart then
-                    humanoid:MoveTo(rootPart.Position + Vector3.new(math.random(-2, 2), 0, math.random(-2, 2)), rootPart)
-                end
-            end
+            pcall(function()
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2(Vector2.new())
+            end)
         end
     end)
 end
@@ -258,7 +249,6 @@ local function findFigure()
     end
 end
 
--- ВОССТАНОВЛЕНО: оригинальная функция поиска шкафов из старого кода (только отель)
 local function findWardrobes()
     if not ESPWardrobes then
         for _, part in pairs(trackedWardrobes) do removeESP(part) end
@@ -384,7 +374,7 @@ local function updateESP()
                 end
             end
             
-            -- Предметы (уменьшенный размер)
+            -- Предметы
             if ESPItems then
                 for _, room in pairs(currentRooms:GetChildren()) do
                     for _, descendant in pairs(room:GetDescendants()) do
@@ -596,7 +586,6 @@ MainTab:CreateToggle({
     end,
 })
 
--- Отдельное оповещение о скритче
 MainTab:CreateToggle({
     Name = "Оповещение о скритче",
     CurrentValue = false,
@@ -620,7 +609,7 @@ MainTab:CreateToggle({
     end,
 })
 
--- НОВОЕ: Анти-AFK
+-- ИСПРАВЛЕННЫЙ тоггл анти-AFK
 MainTab:CreateToggle({
     Name = "Анти-AFK",
     CurrentValue = false,
@@ -636,7 +625,10 @@ MainTab:CreateToggle({
                 Image = 4483362458
             })
         else
-            if antiAFKConn then antiAFKConn:Disconnect(); antiAFKConn = nil end
+            if antiAFKConn then 
+                antiAFKConn:Disconnect()
+                antiAFKConn = nil
+            end
         end
     end,
 })
