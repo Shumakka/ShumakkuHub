@@ -6,8 +6,8 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Shumakku (DOORS)",
-    LoadingTitle = "Загрузка Shumakku...",
-    LoadingSubtitle = "TG: @ShumakkuScript",
+    LoadingTitle = "Shumakku загружается...",
+    LoadingSubtitle = "ЕЩЕ СКРИПТЫ: @ShumakkuScript",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = nil,
@@ -40,18 +40,16 @@ local fovConn = nil
 local speedConn = nil
 local monsterNotifyConn = nil
 
--- Имена монстров на русском
 local monsterNames = {
     ["RushMoving"] = "Раш",
     ["AmbushMoving"] = "Амбуш",
-    ["Eyes"] = "Айз",
-    ["Halt"] = "Холт",
-    ["SeekMoving"] = "Скритч",
-    ["A60"] = "А60",
-    ["A120"] = "А120"
+    ["Eyes"] = "Глаза",
+    ["Halt"] = "Хелт",
+    ["SeekMoving"] = "Сик",
+    ["A60"] = "А-60",
+    ["A120"] = "А-120"
 }
 
--- Русские названия предметов
 local itemNames = {
     ["Crucifix"] = "Распятие",
     ["Flashlight"] = "Фонарик",
@@ -65,7 +63,6 @@ local itemNames = {
     ["Bandage"] = "Бандаж"
 }
 
--- Цвета для разных типов предметов
 local itemColors = {
     ["Crucifix"] = Color3.fromRGB(255, 215, 0),
     ["Flashlight"] = Color3.fromRGB(255, 255, 0),
@@ -103,7 +100,6 @@ local function playAlertSound()
     end)
 end
 
--- Функция создания ESP с квадратным размером для предметов
 local function createESP(part, color, name, sizeMultiplier, showText, isItem)
     if not part or not part:IsA("BasePart") then return end
     
@@ -116,7 +112,6 @@ local function createESP(part, color, name, sizeMultiplier, showText, isItem)
         
         local boxSize
         
-                -- Для предметов делаем квадратный размер 0.4
         if isItem then
             local maxSize = math.max(part.Size.X, part.Size.Y, part.Size.Z)
             boxSize = Vector3.new(maxSize * 0.4, maxSize * 0.4, maxSize * 0.4)
@@ -335,7 +330,6 @@ local function updateESP()
             local currentRooms = Workspace:FindFirstChild("CurrentRooms")
             if not currentRooms then return end
             
-            -- Двери (только цифра)
             if ESPDoors then
                 for _, room in pairs(currentRooms:GetChildren()) do
                     local door = room:FindFirstChild("Door")
@@ -351,7 +345,6 @@ local function updateESP()
                 end
             end
             
-            -- Предметы (квадратный размер)
             if ESPItems then
                 for _, room in pairs(currentRooms:GetChildren()) do
                     for _, descendant in pairs(room:GetDescendants()) do
@@ -361,7 +354,6 @@ local function updateESP()
                                     local part = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
                                     if part and not part:FindFirstChild("ESPBox") then
                                         local color = itemColors[engName] or Color3.fromRGB(128, 128, 0)
-                                        -- Передаем isItem = true для квадратного размера
                                         createESP(part, color, rusName, 1, true, true)
                                     end
                                 end
@@ -443,7 +435,6 @@ end
 
 spawn(updateESP)
 
--- Основное (читы)
 MainTab:CreateToggle({
     Name = "Освещение",
     CurrentValue = false,
@@ -567,7 +558,7 @@ MainTab:CreateToggle({
                         playAlertSound()
                         Rayfield:Notify({
                             Title = "МОНСТР ПОЯВИЛСЯ!",
-                            Content = "ВНИМАНИЕ: " .. rusName .. " появился!",
+                            Content = "Внимание: " .. rusName .. " появился!",
                             Duration = 5,
                             Image = 4483362458
                         })
@@ -648,7 +639,6 @@ MainTab:CreateButton({
     end,
 })
 
--- Вкладка Автор (Telegram)
 AuthorTab:CreateButton({
     Name = "Telegram канал",
     Callback = function()
@@ -656,7 +646,7 @@ AuthorTab:CreateButton({
             setclipboard("https://t.me/ShumakkuScript")
             Rayfield:Notify({
                 Title = "Скопировано!",
-                Content = "Надеюсь ты подпишешься <3",
+                Content = "Надеюсь ты присоединишься <3",
                 Duration = 3,
                 Image = 4483362458
             })
