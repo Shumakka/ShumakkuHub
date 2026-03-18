@@ -16,7 +16,7 @@ local Window = Rayfield:CreateWindow({
 })
 
 local MainTab = Window:CreateTab("Main cheats", 4483362458)
-local DiscordTab = Window:CreateTab("Telegram", 4483362458) -- Создаем вкладку для Telegram
+local TelegramTab = Window:CreateTab("Telegram", 4483362458)
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -41,7 +41,6 @@ local speedConn = nil
 local monsterNotifyConn = nil
 
 local monsterNames = {"RushMoving", "AmbushMoving", "Eyes", "Halt", "SeekMoving", "A60", "A120"}
-
 local itemNames = {"Crucifix", "Flashlight", "Lighter", "Lockpick", "SkeletonKey", "Battery", "Vitamins", "Smoothie", "Candle", "Bandage"}
 
 local defaultFOV = 70
@@ -64,21 +63,17 @@ local function playAlertSound()
         sound.Volume = 1
         sound.Parent = game:GetService("SoundService")
         sound:Play()
-        
         game:GetService("Debris"):AddItem(sound, 3)
     end)
 end
 
 local function createESP(part, color, name, sizeMultiplier, showText)
     if not part or not part:IsA("BasePart") then return end
-    
     sizeMultiplier = sizeMultiplier or 1
     showText = showText == nil and true or showText
-    
     pcall(function()
         if part:FindFirstChild("ESPBox") then part.ESPBox:Destroy() end
         if part:FindFirstChild("ESPBillboard") then part.ESPBillboard:Destroy() end
-        
         local box = Instance.new("BoxHandleAdornment")
         box.Name = "ESPBox"
         box.Parent = part
@@ -89,7 +84,6 @@ local function createESP(part, color, name, sizeMultiplier, showText)
         box.AlwaysOnTop = true
         box.ZIndex = 10
         box.Visible = true
-        
         if showText and name and name ~= "" then
             local billboard = Instance.new("BillboardGui")
             billboard.Name = "ESPBillboard"
@@ -98,7 +92,6 @@ local function createESP(part, color, name, sizeMultiplier, showText)
             billboard.Size = UDim2.new(0, 200, 0, 50)
             billboard.StudsOffset = Vector3.new(0, 4, 0)
             billboard.AlwaysOnTop = true
-            
             local textLabel = Instance.new("TextLabel")
             textLabel.Parent = billboard
             textLabel.Size = UDim2.new(1, 0, 1, 0)
@@ -122,16 +115,12 @@ end
 
 local function findBooks()
     if not ESPBooks then
-        for _, part in pairs(trackedBooks) do
-            removeESP(part)
-        end
+        for _, part in pairs(trackedBooks) do removeESP(part) end
         trackedBooks = {}
         return
     end
-    
     local currentRooms = Workspace:FindFirstChild("CurrentRooms")
     if not currentRooms then return end
-    
     local room50 = currentRooms:FindFirstChild("50")
     if room50 then
         local assets = room50:FindFirstChild("Assets")
@@ -152,7 +141,6 @@ local function findBooks()
             end
         end
     end
-    
     local room100 = currentRooms:FindFirstChild("100")
     if room100 then
         for _, child in pairs(room100:GetChildren()) do
@@ -167,20 +155,12 @@ end
 
 local function findFigure()
     if not ESPMonsters then
-        if trackedFigure50 then
-            removeESP(trackedFigure50)
-            trackedFigure50 = nil
-        end
-        if trackedFigure100 then
-            removeESP(trackedFigure100)
-            trackedFigure100 = nil
-        end
+        if trackedFigure50 then removeESP(trackedFigure50); trackedFigure50 = nil end
+        if trackedFigure100 then removeESP(trackedFigure100); trackedFigure100 = nil end
         return
     end
-    
     local currentRooms = Workspace:FindFirstChild("CurrentRooms")
     if not currentRooms then return end
-    
     local room50 = currentRooms:FindFirstChild("50")
     if room50 then
         local figureSetup = room50:FindFirstChild("FigureSetup")
@@ -195,7 +175,6 @@ local function findFigure()
             end
         end
     end
-    
     local room100 = currentRooms:FindFirstChild("100")
     if room100 then
         local figureSetup = room100:FindFirstChild("FigureSetup")
@@ -214,16 +193,12 @@ end
 
 local function findWardrobes()
     if not ESPWardrobes then
-        for _, part in pairs(trackedWardrobes) do
-            removeESP(part)
-        end
+        for _, part in pairs(trackedWardrobes) do removeESP(part) end
         trackedWardrobes = {}
         return
     end
-    
     local currentRooms = Workspace:FindFirstChild("CurrentRooms")
     if not currentRooms then return end
-    
     for _, room in pairs(currentRooms:GetChildren()) do
         local assets = room:FindFirstChild("Assets")
         if assets then
@@ -242,16 +217,12 @@ end
 
 local function findKeys()
     if not ESPKeys then
-        for _, part in pairs(trackedKeys) do
-            removeESP(part)
-        end
+        for _, part in pairs(trackedKeys) do removeESP(part) end
         trackedKeys = {}
         return
     end
-    
     local currentRooms = Workspace:FindFirstChild("CurrentRooms")
     if not currentRooms then return end
-    
     for _, room in pairs(currentRooms:GetChildren()) do
         local assets = room:FindFirstChild("Assets")
         if assets then
@@ -263,7 +234,6 @@ local function findKeys()
                     table.insert(trackedKeys, hitbox)
                 end
             end
-            
             for _, child in pairs(assets:GetDescendants()) do
                 if child.Name == "KeyObtain" and child:IsA("Model") then
                     local hitbox = child:FindFirstChild("Hitbox")
@@ -279,16 +249,12 @@ end
 
 local function findLevers()
     if not ESPLevers then
-        for _, part in pairs(trackedLevers) do
-            removeESP(part)
-        end
+        for _, part in pairs(trackedLevers) do removeESP(part) end
         trackedLevers = {}
         return
     end
-    
     local currentRooms = Workspace:FindFirstChild("CurrentRooms")
     if not currentRooms then return end
-    
     for _, room in pairs(currentRooms:GetChildren()) do
         local assets = room:FindFirstChild("Assets")
         if assets then
@@ -309,24 +275,20 @@ local function updateESP()
         pcall(function()
             local currentRooms = Workspace:FindFirstChild("CurrentRooms")
             if not currentRooms then return end
-            
             if ESPDoors then
                 for _, room in pairs(currentRooms:GetChildren()) do
                     local door = room:FindFirstChild("Door")
                     if door and door.PrimaryPart and not door.PrimaryPart:FindFirstChild("ESPBox") then
-                        local roomNum = room.Name
-                        createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), "Door " .. roomNum+1, 1)
+                        local roomNum = tonumber(room.Name) or 0
+                        createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), "Door " .. (roomNum + 1), 1)
                     end
                 end
             else
                 for _, room in pairs(currentRooms:GetChildren()) do
                     local door = room:FindFirstChild("Door")
-                    if door and door.PrimaryPart then
-                        removeESP(door.PrimaryPart)
-                    end
+                    if door and door.PrimaryPart then removeESP(door.PrimaryPart) end
                 end
             end
-            
             if ESPItems then
                 for _, room in pairs(currentRooms:GetChildren()) do
                     for _, descendant in pairs(room:GetDescendants()) do
@@ -349,17 +311,11 @@ local function updateESP()
                 end
             end
         end)
-        
         pcall(findBooks)
-        
         pcall(findFigure)
-        
         pcall(findWardrobes)
-        
         pcall(findKeys)
-        
         pcall(findLevers)
-        
         pcall(function()
             if ESPMonsters then
                 for _, monster in pairs(Workspace:GetChildren()) do
@@ -379,7 +335,6 @@ local function updateESP()
                 end
             end
         end)
-        
         pcall(function()
             if ESPPlayers then
                 for _, player in pairs(Players:GetPlayers()) do
@@ -395,24 +350,31 @@ local function updateESP()
                 end
             end
         end)
-        
         wait(0.5)
     end
 end
 
 spawn(updateESP)
 
--- Создаем кнопку для Telegram во вкладке MainTab
 MainTab:CreateButton({
     Name = "📱 Join Telegram Channel",
     Callback = function()
-        setclipboard and setclipboard("https://t.me/MakeinuHub")
-        Rayfield:Notify({
-            Title = "Link Copied!",
-            Content = "Telegram link copied to clipboard!",
-            Duration = 3,
-            Image = 4483362458
-        })
+        if setclipboard then
+            setclipboard("https://t.me/MakeinuHub")
+            Rayfield:Notify({
+                Title = "Link Copied!",
+                Content = "Telegram link copied to clipboard!",
+                Duration = 3,
+                Image = 4483362458
+            })
+        else
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Clipboard not supported",
+                Duration = 3,
+                Image = 4483362458
+            })
+        end
     end,
 })
 
@@ -459,9 +421,7 @@ MainTab:CreateToggle({
     Callback = function(Value)
         ESPKeys = Value
         if not Value then
-            for _, part in pairs(trackedKeys) do
-                removeESP(part)
-            end
+            for _, part in pairs(trackedKeys) do removeESP(part) end
             trackedKeys = {}
         end
     end,
@@ -483,9 +443,7 @@ MainTab:CreateToggle({
     Callback = function(Value)
         ESPLevers = Value
         if not Value then
-            for _, part in pairs(trackedLevers) do
-                removeESP(part)
-            end
+            for _, part in pairs(trackedLevers) do removeESP(part) end
             trackedLevers = {}
         end
     end,
@@ -498,9 +456,7 @@ MainTab:CreateToggle({
     Callback = function(Value)
         ESPWardrobes = Value
         if not Value then
-            for _, part in pairs(trackedWardrobes) do
-                removeESP(part)
-            end
+            for _, part in pairs(trackedWardrobes) do removeESP(part) end
             trackedWardrobes = {}
         end
     end,
@@ -513,9 +469,7 @@ MainTab:CreateToggle({
     Callback = function(Value)
         ESPBooks = Value
         if not Value then
-            for _, part in pairs(trackedBooks) do
-                removeESP(part)
-            end
+            for _, part in pairs(trackedBooks) do removeESP(part) end
             trackedBooks = {}
         end
     end,
@@ -528,14 +482,8 @@ MainTab:CreateToggle({
     Callback = function(Value)
         ESPMonsters = Value
         if not Value then
-            if trackedFigure50 then
-                removeESP(trackedFigure50)
-                trackedFigure50 = nil
-            end
-            if trackedFigure100 then
-                removeESP(trackedFigure100)
-                trackedFigure100 = nil
-            end
+            if trackedFigure50 then removeESP(trackedFigure50); trackedFigure50 = nil end
+            if trackedFigure100 then removeESP(trackedFigure100); trackedFigure100 = nil end
         end
     end,
 })
@@ -549,7 +497,6 @@ MainTab:CreateToggle({
     end,
 })
 
--- Уведомления о Монстрах
 MainTab:CreateToggle({
     Name = "Monster notification",
     CurrentValue = false,
@@ -559,7 +506,6 @@ MainTab:CreateToggle({
             monsterNotifyConn = Workspace.ChildAdded:Connect(function(child)
                 if table.find(monsterNames, child.Name) then
                     playAlertSound()
-                    
                     Rayfield:Notify({
                         Title = "MONSTER SPAWNED!",
                         Content = "ALERT: " .. child.Name .. " spawned!",
@@ -632,23 +578,31 @@ MainTab:CreateButton({
     end,
 })
 
--- Добавляем кнопку для Telegram также во вкладку DiscordTab (переименована в Telegram)
-DiscordTab:CreateButton({
+TelegramTab:CreateButton({
     Name = "📱 Join Telegram Channel",
     Callback = function()
-        setclipboard and setclipboard("https://t.me/MakeinuHub")
-        Rayfield:Notify({
-            Title = "Link Copied!",
-            Content = "Telegram link copied to clipboard!",
-            Duration = 3,
-            Image = 4483362458
-        })
+        if setclipboard then
+            setclipboard("https://t.me/MakeinuHub")
+            Rayfield:Notify({
+                Title = "Link Copied!",
+                Content = "Telegram link copied to clipboard!",
+                Duration = 3,
+                Image = 4483362458
+            })
+        else
+            Rayfield:Notify({
+                Title = "Error",
+                Content = "Clipboard not supported",
+                Duration = 3,
+                Image = 4483362458
+            })
+        end
     end,
 })
 
-DiscordTab:CreateLabel("Our Telegram channel:")
-DiscordTab:CreateLabel("@MakeinuHub")
-DiscordTab:CreateLabel("https://t.me/MakeinuHub")
+TelegramTab:CreateLabel("Our Telegram channel:")
+TelegramTab:CreateLabel("@MakeinuHub")
+TelegramTab:CreateLabel("https://t.me/MakeinuHub")
 
 LocalPlayer.CharacterAdded:Connect(function()
     wait(1)
@@ -656,7 +610,7 @@ LocalPlayer.CharacterAdded:Connect(function()
     if fovConn then
         Workspace.CurrentCamera.FieldOfView = currentFOV
     end
-    if speedConn and char:FindFirstChild("Humanoid") then
+    if speedConn and char and char:FindFirstChild("Humanoid") then
         char.Humanoid.WalkSpeed = currentSpeed
     end
 end)
