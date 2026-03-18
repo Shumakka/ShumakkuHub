@@ -327,20 +327,15 @@ local function updateESP()
             if not currentRooms then return end
             
             -- Двери (оригинальный размер из старого кода)
-            if ESPDoors then
-                for _, room in pairs(currentRooms:GetChildren()) do
-                    local door = room:FindFirstChild("Door")
-                    if door and door.PrimaryPart and not door.PrimaryPart:FindFirstChild("ESPBox") then
-                        local roomNum = tonumber(room.Name) or 0
-                        createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), "Дверь " .. (roomNum + 1), 1)
-                    end
-                end
-            else
-                for _, room in pairs(currentRooms:GetChildren()) do
-                    local door = room:FindFirstChild("Door")
-                    if door and door.PrimaryPart then removeESP(door.PrimaryPart) end
-                end
-            end
+if ESPDoors then
+    for _, room in pairs(currentRooms:GetChildren()) do
+        local door = room:FindFirstChild("Door")
+        if door and door.PrimaryPart and not door.PrimaryPart:FindFirstChild("ESPBox") then
+            local roomNum = tonumber(room.Name) or 0
+            createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), tostring(roomNum + 1), 1)
+        end
+    end
+end
             
             -- Предметы
             if ESPItems then
