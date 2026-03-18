@@ -24,7 +24,6 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local VirtualUser = game:GetService("VirtualUser")
 
 local ESPDoors = false
 local ESPKeys = false
@@ -36,14 +35,12 @@ local ESPBooks = false
 local ESPWardrobes = false
 local MonsterNotify = false
 local SeekNotify = false
-local AntiAFK = false
 
 local fullbrightConn = nil
 local fovConn = nil
 local speedConn = nil
 local monsterNotifyConn = nil
 local seekNotifyConn = nil
-local antiAFKConn = nil
 
 local monsterNames = {"RushMoving", "AmbushMoving", "Eyes", "Halt", "A60", "A120"}
 
@@ -63,16 +60,16 @@ local itemNames = {
 
 -- Цвета для разных типов предметов
 local itemColors = {
-    ["Crucifix"] = Color3.fromRGB(255, 215, 0),
-    ["Flashlight"] = Color3.fromRGB(255, 255, 0),
-    ["Lighter"] = Color3.fromRGB(255, 165, 0),
-    ["Lockpick"] = Color3.fromRGB(192, 192, 192),
-    ["SkeletonKey"] = Color3.fromRGB(255, 255, 255),
-    ["Battery"] = Color3.fromRGB(50, 205, 50),
-    ["Vitamins"] = Color3.fromRGB(255, 105, 180),
-    ["Smoothie"] = Color3.fromRGB(255, 20, 147),
-    ["Candle"] = Color3.fromRGB(255, 140, 0),
-    ["Bandage"] = Color3.fromRGB(255, 255, 255)
+    ["Crucifix"] = Color3.fromRGB(255, 215, 0),    -- Золотой
+    ["Flashlight"] = Color3.fromRGB(255, 255, 0),   -- Желтый
+    ["Lighter"] = Color3.fromRGB(255, 165, 0),      -- Оранжевый
+    ["Lockpick"] = Color3.fromRGB(192, 192, 192),   -- Серебряный
+    ["SkeletonKey"] = Color3.fromRGB(255, 255, 255), -- Белый
+    ["Battery"] = Color3.fromRGB(50, 205, 50),      -- Лаймовый
+    ["Vitamins"] = Color3.fromRGB(255, 105, 180),   -- Розовый
+    ["Smoothie"] = Color3.fromRGB(255, 20, 147),    -- Глубокий розовый
+    ["Candle"] = Color3.fromRGB(255, 140, 0),       -- Темно-оранжевый
+    ["Bandage"] = Color3.fromRGB(255, 255, 255)     -- Белый
 }
 
 local defaultFOV = 70
@@ -99,7 +96,7 @@ local function playAlertSound()
     end)
 end
 
--- функция создания ESP
+-- ИЗМЕНЕНО: функция создания ESP с увеличенными хитбоксами в 2 раза
 local function createESP(part, color, name, sizeMultiplier, showText, isItem)
     if not part or not part:IsA("BasePart") then return end
     sizeMultiplier = sizeMultiplier or 1
@@ -110,10 +107,12 @@ local function createESP(part, color, name, sizeMultiplier, showText, isItem)
         
         local boxSize
         
+        -- Для предметов делаем размер в 2 раза больше (было 0.3, стало 0.6)
         if isItem then
             local minSize = math.min(part.Size.X, part.Size.Y, part.Size.Z)
             boxSize = Vector3.new(minSize * 0.6, minSize * 0.6, minSize * 0.6)
         else
+            -- Для остального увеличиваем в 2 раза
             boxSize = part.Size * sizeMultiplier * 2
         end
         
@@ -154,20 +153,6 @@ local function removeESP(part)
     pcall(function()
         if part:FindFirstChild("ESPBox") then part.ESPBox:Destroy() end
         if part:FindFirstChild("ESPBillboard") then part.ESPBillboard:Destroy() end
-    end)
-end
-
--- ИСПРАВЛЕННАЯ функция анти-AFK
-local function setupAntiAFK()
-    if antiAFKConn then antiAFKConn:Disconnect() end
-    
-    antiAFKConn = RunService.Heartbeat:Connect(function()
-        if AntiAFK and LocalPlayer and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-            pcall(function()
-                VirtualUser:CaptureController()
-                VirtualUser:ClickButton2(Vector2.new())
-            end)
-        end
     end)
 end
 
@@ -249,6 +234,7 @@ local function findFigure()
     end
 end
 
+-- ВОССТАНОВЛЕНО: оригинальная функция поиска шкафов из старого кода (только отель)
 local function findWardrobes()
     if not ESPWardrobes then
         for _, part in pairs(trackedWardrobes) do removeESP(part) end
@@ -374,7 +360,7 @@ local function updateESP()
                 end
             end
             
-            -- Предметы
+            -- Предметы (уменьшенный размер)
             if ESPItems then
                 for _, room in pairs(currentRooms:GetChildren()) do
                     for _, descendant in pairs(room:GetDescendants()) do
@@ -586,6 +572,7 @@ MainTab:CreateToggle({
     end,
 })
 
+-- НОВОЕ: отдельное оповещение о скритче
 MainTab:CreateToggle({
     Name = "Оповещение о скритче",
     CurrentValue = false,
@@ -606,30 +593,6 @@ MainTab:CreateToggle({
     Flag = "ESPPlayersV1",
     Callback = function(Value)
         ESPPlayers = Value
-    end,
-})
-
--- ИСПРАВЛЕННЫЙ тоггл анти-AFK
-MainTab:CreateToggle({
-    Name = "Анти-AFK",
-    CurrentValue = false,
-    Flag = "AntiAFKV1",
-    Callback = function(Value)
-        AntiAFK = Value
-        if Value then
-            setupAntiAFK()
-            Rayfield:Notify({
-                Title = "Анти-AFK включен",
-                Content = "Можно отойти спокойно!",
-                Duration = 3,
-                Image = 4483362458
-            })
-        else
-            if antiAFKConn then 
-                antiAFKConn:Disconnect()
-                antiAFKConn = nil
-            end
-        end
     end,
 })
 
