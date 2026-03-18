@@ -1,22 +1,22 @@
--- Shumakku Hub for Doors
+-- Shumakku (DOORS)
 -- By Shumakku
 -- Telegram: https://t.me/MakeinuHub
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "Shumakku Hub for Doors",
-    LoadingTitle = "Loading Shumakku Hub...",
+    Name = "Shumakku (DOORS)",
+    LoadingTitle = "Загрузка Shumakku...",
     LoadingSubtitle = "TG: @MakeinuHub",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = nil,
-        FileName = "DoorsCheatsV1_Shumakku"
+        FileName = "DoorsCheats_Shumakku"
     }
 })
 
-local MainTab = Window:CreateTab("Main cheats", 4483362458)
-local TelegramTab = Window:CreateTab("Telegram", 4483362458)
+local MainTab = Window:CreateTab("Основное", 4483362458)
+local AuthorTab = Window:CreateTab("Автор", 4483362458)
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -169,7 +169,7 @@ local function findFigure()
             if figureRig then
                 local hitbox = figureRig:FindFirstChild("Hitbox")
                 if hitbox and hitbox:IsA("BasePart") and not hitbox:FindFirstChild("ESPBox") then
-                    createESP(hitbox, Color3.fromRGB(255, 0, 0), "Monster: Figure")
+                    createESP(hitbox, Color3.fromRGB(255, 0, 0), "Монстр: Figure")
                     trackedFigure50 = hitbox
                 end
             end
@@ -183,7 +183,7 @@ local function findFigure()
             if figureRig then
                 local hitbox = figureRig:FindFirstChild("Hitbox")
                 if hitbox and hitbox:IsA("BasePart") and not hitbox:FindFirstChild("ESPBox") then
-                    createESP(hitbox, Color3.fromRGB(255, 0, 0), "Monster: Figure")
+                    createESP(hitbox, Color3.fromRGB(255, 0, 0), "Монстр: Figure")
                     trackedFigure100 = hitbox
                 end
             end
@@ -206,7 +206,7 @@ local function findWardrobes()
                 if wardrobe.Name == "Wardrobe" then
                     local main = wardrobe:FindFirstChild("Main")
                     if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
-                        createESP(main, Color3.fromRGB(224, 145, 76), "Closet")
+                        createESP(main, Color3.fromRGB(224, 145, 76), "Шкаф")
                         table.insert(trackedWardrobes, main)
                     end
                 end
@@ -230,7 +230,7 @@ local function findKeys()
             if keyObtain then
                 local hitbox = keyObtain:FindFirstChild("Hitbox")
                 if hitbox and hitbox:IsA("BasePart") and not hitbox:FindFirstChild("ESPBox") then
-                    createESP(hitbox, Color3.fromRGB(255, 255, 0), "Key", 0.5)
+                    createESP(hitbox, Color3.fromRGB(255, 255, 0), "Ключ", 0.5)
                     table.insert(trackedKeys, hitbox)
                 end
             end
@@ -238,7 +238,7 @@ local function findKeys()
                 if child.Name == "KeyObtain" and child:IsA("Model") then
                     local hitbox = child:FindFirstChild("Hitbox")
                     if hitbox and hitbox:IsA("BasePart") and not hitbox:FindFirstChild("ESPBox") then
-                        createESP(hitbox, Color3.fromRGB(255, 255, 0), "Key", 0.5)
+                        createESP(hitbox, Color3.fromRGB(255, 255, 0), "Ключ", 0.5)
                         table.insert(trackedKeys, hitbox)
                     end
                 end
@@ -262,7 +262,7 @@ local function findLevers()
             if leverForGate then
                 local main = leverForGate:FindFirstChild("Main")
                 if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
-                    createESP(main, Color3.fromRGB(255, 165, 0), "Lever")
+                    createESP(main, Color3.fromRGB(255, 165, 0), "Рычаг")
                     table.insert(trackedLevers, main)
                 end
             end
@@ -280,7 +280,7 @@ local function updateESP()
                     local door = room:FindFirstChild("Door")
                     if door and door.PrimaryPart and not door.PrimaryPart:FindFirstChild("ESPBox") then
                         local roomNum = tonumber(room.Name) or 0
-                        createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), "Door " .. (roomNum + 1), 1)
+                        createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), "Дверь " .. (roomNum + 1), 1)
                     end
                 end
             else
@@ -322,7 +322,7 @@ local function updateESP()
                     if monster:IsA("Model") and table.find(monsterNames, monster.Name) then
                         local part = monster.PrimaryPart or monster:FindFirstChild("HumanoidRootPart") or monster:FindFirstChildWhichIsA("BasePart")
                         if part and not part:FindFirstChild("ESPBox") then
-                            createESP(part, Color3.fromRGB(255, 0, 0), "Monster: " .. monster.Name)
+                            createESP(part, Color3.fromRGB(255, 0, 0), "Монстр: " .. monster.Name)
                         end
                     end
                 end
@@ -356,30 +356,9 @@ end
 
 spawn(updateESP)
 
-MainTab:CreateButton({
-    Name = "📱 Join Telegram Channel",
-    Callback = function()
-        if setclipboard then
-            setclipboard("https://t.me/MakeinuHub")
-            Rayfield:Notify({
-                Title = "Link Copied!",
-                Content = "Telegram link copied to clipboard!",
-                Duration = 3,
-                Image = 4483362458
-            })
-        else
-            Rayfield:Notify({
-                Title = "Error",
-                Content = "Clipboard not supported",
-                Duration = 3,
-                Image = 4483362458
-            })
-        end
-    end,
-})
-
+-- Основное (читы)
 MainTab:CreateToggle({
-    Name = "Fullbright",
+    Name = "Освещение",
     CurrentValue = false,
     Flag = "FullbrightV1",
     Callback = function(Value)
@@ -406,7 +385,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-    Name = "Door ESP",
+    Name = "Двери (ESP)",
     CurrentValue = false,
     Flag = "ESPDoorsV1",
     Callback = function(Value)
@@ -415,7 +394,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-    Name = "Key ESP",
+    Name = "Ключ (ESP)",
     CurrentValue = false,
     Flag = "ESPKeysV1",
     Callback = function(Value)
@@ -428,7 +407,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-    Name = "Items ESP (sometimes it doesn't work)",
+    Name = "Предметы (ESP)",
     CurrentValue = false,
     Flag = "ESPItemsV1",
     Callback = function(Value)
@@ -437,7 +416,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-    Name = "Lever ESP",
+    Name = "Рычаг (ESP)",
     CurrentValue = false,
     Flag = "ESPLeversV1",
     Callback = function(Value)
@@ -450,7 +429,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-    Name = "Closet ESP",
+    Name = "Шкафы (ESP)",
     CurrentValue = false,
     Flag = "ESPWardrobesV1",
     Callback = function(Value)
@@ -463,7 +442,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-    Name = "Book/Fuses ESP",
+    Name = "Книги/Предохранители (ESP)",
     CurrentValue = false,
     Flag = "ESPBooksV1",
     Callback = function(Value)
@@ -476,7 +455,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-    Name = "Monster ESP",
+    Name = "Монстры (ESP)",
     CurrentValue = false,
     Flag = "ESPMonstersV1",
     Callback = function(Value)
@@ -489,16 +468,7 @@ MainTab:CreateToggle({
 })
 
 MainTab:CreateToggle({
-    Name = "Player ESP",
-    CurrentValue = false,
-    Flag = "ESPPlayersV1",
-    Callback = function(Value)
-        ESPPlayers = Value
-    end,
-})
-
-MainTab:CreateToggle({
-    Name = "Monster notification",
+    Name = "Оповещение о монстрах",
     CurrentValue = false,
     Flag = "MonsterNotifyV1",
     Callback = function(Value)
@@ -507,8 +477,8 @@ MainTab:CreateToggle({
                 if table.find(monsterNames, child.Name) then
                     playAlertSound()
                     Rayfield:Notify({
-                        Title = "MONSTER SPAWNED!",
-                        Content = "ALERT: " .. child.Name .. " spawned!",
+                        Title = "МОНСТР ПОЯВИЛСЯ!",
+                        Content = "ВНИМАНИЕ: " .. child.Name .. " появился!",
                         Duration = 5,
                         Image = 4483362458
                     })
@@ -520,8 +490,17 @@ MainTab:CreateToggle({
     end,
 })
 
+MainTab:CreateToggle({
+    Name = "Другие игроки (ESP)",
+    CurrentValue = false,
+    Flag = "ESPPlayersV1",
+    Callback = function(Value)
+        ESPPlayers = Value
+    end,
+})
+
 MainTab:CreateSlider({
-    Name = "FOV Changer",
+    Name = "FOV",
     Range = {30, 120},
     Increment = 1,
     Suffix = "°",
@@ -538,8 +517,8 @@ MainTab:CreateSlider({
 })
 
 MainTab:CreateSlider({
-    Name = "Speed (16-21)",
-    Range = {16, 21},
+    Name = "Скорость (15-21)",
+    Range = {15, 21},
     Increment = 1,
     Suffix = "",
     CurrentValue = defaultSpeed,
@@ -558,7 +537,7 @@ MainTab:CreateSlider({
 })
 
 MainTab:CreateButton({
-    Name = "Reset FOV (default: 70)",
+    Name = "Вернуть FOV (70°)",
     Callback = function()
         currentFOV = defaultFOV
         if fovConn then fovConn:Disconnect(); fovConn = nil end
@@ -567,7 +546,7 @@ MainTab:CreateButton({
 })
 
 MainTab:CreateButton({
-    Name = "Reset speed (default: 16)",
+    Name = "Вернуть скорость (16)",
     Callback = function()
         currentSpeed = defaultSpeed
         if speedConn then speedConn:Disconnect(); speedConn = nil end
@@ -578,21 +557,22 @@ MainTab:CreateButton({
     end,
 })
 
-TelegramTab:CreateButton({
-    Name = "📱 Join Telegram Channel",
+-- Вкладка Автор (Telegram)
+AuthorTab:CreateButton({
+    Name = "Telegram канал",
     Callback = function()
         if setclipboard then
             setclipboard("https://t.me/MakeinuHub")
             Rayfield:Notify({
-                Title = "Link Copied!",
-                Content = "Telegram link copied to clipboard!",
+                Title = "Скопировано",
+                Content = "Надеюсь ты оформил подписку!",
                 Duration = 3,
                 Image = 4483362458
             })
         else
             Rayfield:Notify({
-                Title = "Error",
-                Content = "Clipboard not supported",
+                Title = "Ошибка",
+                Content = "Буфер обмена не поддерживается",
                 Duration = 3,
                 Image = 4483362458
             })
@@ -600,9 +580,8 @@ TelegramTab:CreateButton({
     end,
 })
 
-TelegramTab:CreateLabel("Our Telegram channel:")
-TelegramTab:CreateLabel("@MakeinuHub")
-TelegramTab:CreateLabel("https://t.me/MakeinuHub")
+AuthorTab:CreateLabel("Автор и создатель:")
+AuthorTab:CreateLabel("ТГК: @MakeinuHub")
 
 LocalPlayer.CharacterAdded:Connect(function()
     wait(1)
@@ -616,8 +595,8 @@ LocalPlayer.CharacterAdded:Connect(function()
 end)
 
 Rayfield:Notify({
-    Title = "Shumakku Hub Ready!",
-    Content = "TG: @MakeinuHub | Have fun!",
+    Title = "Shumakku",
+    Content = "ТГК: @MakeinuHub",
     Duration = 8,
     Image = 4483362458
 })
