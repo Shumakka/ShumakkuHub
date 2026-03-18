@@ -34,14 +34,49 @@ local ESPPlayers = false
 local ESPBooks = false
 local ESPWardrobes = false
 local MonsterNotify = false
+local SeekNotify = false
 
 local fullbrightConn = nil
 local fovConn = nil
 local speedConn = nil
 local monsterNotifyConn = nil
+local seekNotifyConn = nil
 
 local monsterNames = {"RushMoving", "AmbushMoving", "Eyes", "Halt", "SeekMoving", "A60", "A120"}
-local itemNames = {"Crucifix", "Flashlight", "Lighter", "Lockpick", "SkeletonKey", "Battery", "Vitamins", "Smoothie", "Candle", "Bandage"}
+
+-- ИЗМЕНЕНО: русские названия предметов
+local itemNames = {
+    ["Crucifix"] = "Распятие",
+    ["Flashlight"] = "Фонарик",
+    ["Lighter"] = "Зажигалка",
+    ["Lockpick"] = "Отмычка",
+    ["SkeletonKey"] = "Скелет-ключ",
+    ["Battery"] = "Батарейка",
+    ["Vitamins"] = "Витамины",
+    ["Smoothie"] = "Смузи",
+    ["Candle"] = "Свеча",
+    ["Bandage"] = "Бандаж",
+    ["GlowStick"] = "Светящаяся палка",
+    ["Glowstick"] = "Светящаяся палка"
+}
+
+-- Цвета для разных типов предметов
+local itemColors = {
+    ["Crucifix"] = Color3.fromRGB(255, 215, 0),    -- Золотой
+    ["Flashlight"] = Color3.fromRGB(255, 255, 0),   -- Желтый
+    ["Lighter"] = Color3.fromRGB(255, 165, 0),      -- Оранжевый
+    ["Lockpick"] = Color3.fromRGB(192, 192, 192),   -- Серебряный
+    ["SkeletonKey"] = Color3.fromRGB(255, 255, 255), -- Белый
+    ["Battery"] = Color3.fromRGB(50, 205, 50),      -- Лаймовый
+    ["Vitamins"] = Color3.fromRGB(255, 105, 180),   -- Розовый
+    ["Smoothie"] = Color3.fromRGB(255, 20, 147),    -- Глубокий розовый
+    ["Candle"] = Color3.fromRGB(255, 140, 0),       -- Темно-оранжевый
+    ["Bandage"] = Color3.fromRGB(255, 255, 255),    -- Белый
+    ["GlowStick"] = Color3.fromRGB(0, 255, 0),      -- Ярко-зеленый
+    ["Glowstick"] = Color3.fromRGB(0, 255, 0),      -- Ярко-зеленый
+    ["UsedGlowStick"] = Color3.fromRGB(139, 69, 19), -- Коричневый (использованный)
+    ["UsedGlowstick"] = Color3.fromRGB(139, 69, 19)  -- Коричневый (использованный)
+}
 
 local defaultFOV = 70
 local defaultSpeed = 15
@@ -74,16 +109,24 @@ local function createESP(part, color, name, sizeMultiplier, showText)
     pcall(function()
         if part:FindFirstChild("ESPBox") then part.ESPBox:Destroy() end
         if part:FindFirstChild("ESPBillboard") then part.ESPBillboard:Destroy() end
+        
+        local boxSize = Vector3.new(
+            math.max(part.Size.X, part.Size.Y, part.Size.Z) * sizeMultiplier,
+            math.max(part.Size.X, part.Size.Y, part.Size.Z) * sizeMultiplier,
+            math.max(part.Size.X, part.Size.Y, part.Size.Z) * sizeMultiplier
+        )
+        
         local box = Instance.new("BoxHandleAdornment")
         box.Name = "ESPBox"
         box.Parent = part
         box.Adornee = part
-        box.Size = part.Size * sizeMultiplier
+        box.Size = boxSize
         box.Color3 = color
         box.Transparency = 0.3
         box.AlwaysOnTop = true
         box.ZIndex = 10
         box.Visible = true
+        
         if showText and name and name ~= "" then
             local billboard = Instance.new("BillboardGui")
             billboard.Name = "ESPBillboard"
@@ -111,6 +154,52 @@ local function removeESP(part)
         if part:FindFirstChild("ESPBox") then part.ESPBox:Destroy() end
         if part:FindFirstChild("ESPBillboard") then part.ESPBillboard:Destroy() end
     end)
+end
+
+-- НОВАЯ функция для поиска glowstick в шахтах
+local function findGlowsticks()
+    if not ESPItems then return end
+    
+    local mines = Workspace:FindFirstChild("Mines") or Workspace:FindFirstChild("TheMines")
+    if not mines then return end
+    
+    -- Поиск светящихся палок
+    for _, child in pairs(mines:GetDescendants()) do
+        if child:IsA("Model") then
+            local nameLower = child.Name:lower()
+            
+            -- Поиск неиспользованных glowstick
+            if nameLower:find("glowstick") or nameLower:find("glow stick") then
+                if not nameLower:find("used") then
+                    local part = child.PrimaryPart or child:FindFirstChildWhichIsA("BasePart")
+                    if part and not part:FindFirstChild("ESPBox") then
+                        local color = itemColors["GlowStick"] or Color3.fromRGB(0, 255, 0)
+                        createESP(part, color, "Светящаяся палка", 1)
+                    end
+                end
+            end
+            
+            -- Поиск использованных glowstick (тускло коричневые)
+            if nameLower:find("usedglowstick") or nameLower:find("used glow stick") or 
+               (nameLower:find("glowstick") and nameLower:find("used")) then
+                local part = child.PrimaryPart or child:FindFirstChildWhichIsA("BasePart")
+                if part and not part:FindFirstChild("ESPBox") then
+                    createESP(part, Color3.fromRGB(139, 69, 19), "Исп. свет. палка", 0.8)
+                end
+            end
+        end
+        
+        -- Поиск отдельных частей (на случай если это не модель)
+        if child:IsA("BasePart") and (child.Name:lower():find("glowstick") or child.Name:lower():find("glow stick")) then
+            if not child:FindFirstChild("ESPBox") then
+                if child.Name:lower():find("used") then
+                    createESP(child, Color3.fromRGB(139, 69, 19), "Исп. свет. палка", 0.8)
+                else
+                    createESP(child, Color3.fromRGB(0, 255, 0), "Светящаяся палка", 1)
+                end
+            end
+        end
+    end
 end
 
 local function findBooks()
@@ -191,7 +280,6 @@ local function findFigure()
     end
 end
 
--- ОБНОВЛЕННАЯ функция для поиска шкафов во всех измерениях
 local function findWardrobes()
     if not ESPWardrobes then
         for _, part in pairs(trackedWardrobes) do removeESP(part) end
@@ -199,24 +287,22 @@ local function findWardrobes()
         return
     end
     
-    -- Поиск в разных измерениях
-    local function searchInContainer(container)
-        if not container then return end
+    local function deepSearch(container, depth)
+        if depth > 5 then return end
         
-        -- Поиск шкафов в папке Assets (как в отеле)
-        local assets = container:FindFirstChild("Assets")
-        if assets then
-            for _, wardrobe in pairs(assets:GetChildren()) do
-                -- Разные названия шкафов в разных измерениях
-                if wardrobe.Name == "Wardrobe" or 
-                   wardrobe.Name == "Closet" or 
-                   wardrobe.Name:find("Wardrobe") or 
-                   wardrobe.Name:find("Closet") or
-                   wardrobe.Name:find("шкаф") then
+        for _, child in pairs(container:GetChildren()) do
+            if child:IsA("Model") then
+                local nameLower = child.Name:lower()
+                if nameLower:find("wardrobe") or 
+                   nameLower:find("closet") or 
+                   nameLower:find("шкаф") or 
+                   nameLower:find("cabinet") or
+                   nameLower:find("shkaf") then
                     
-                    local main = wardrobe:FindFirstChild("Main") or 
-                                wardrobe:FindFirstChild("Handle") or 
-                                wardrobe:FindFirstChildWhichIsA("BasePart")
+                    local main = child:FindFirstChild("Main") or 
+                                child:FindFirstChild("Handle") or 
+                                child:FindFirstChild("Part") or
+                                child:FindFirstChildWhichIsA("BasePart")
                     
                     if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
                         createESP(main, Color3.fromRGB(224, 145, 76), "Шкаф")
@@ -224,76 +310,27 @@ local function findWardrobes()
                     end
                 end
             end
-        end
-        
-        -- Поиск шкафов напрямую в комнате
-        for _, child in pairs(container:GetChildren()) do
-            if child:IsA("Model") and 
-               (child.Name == "Wardrobe" or 
-                child.Name == "Closet" or 
-                child.Name:find("Wardrobe") or 
-                child.Name:find("Closet")) then
-                
-                local main = child:FindFirstChild("Main") or 
-                            child:FindFirstChild("Handle") or 
-                            child:FindFirstChildWhichIsA("BasePart")
-                
-                if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
-                    createESP(main, Color3.fromRGB(224, 145, 76), "Шкаф")
-                    table.insert(trackedWardrobes, main)
-                end
-            end
+            deepSearch(child, depth + 1)
         end
     end
     
-    -- Поиск в CurrentRooms (Отель)
-    local currentRooms = Workspace:FindFirstChild("CurrentRooms")
-    if currentRooms then
-        for _, room in pairs(currentRooms:GetChildren()) do
-            searchInContainer(room)
-        end
-    end
+    deepSearch(Workspace, 0)
     
-    -- Поиск в The Mines (Шахты)
-    local mines = Workspace:FindFirstChild("Mines") or Workspace:FindFirstChild("TheMines")
-    if mines then
-        searchInContainer(mines)
-    end
+    local locationsToCheck = {
+        Workspace:FindFirstChild("CurrentRooms"),
+        Workspace:FindFirstChild("Mines"),
+        Workspace:FindFirstChild("TheMines"),
+        Workspace:FindFirstChild("Outdoors"),
+        Workspace:FindFirstChild("TheOutdoors"),
+        Workspace:FindFirstChild("Rooms"),
+        Workspace:FindFirstChild("TheRooms"),
+        Workspace:FindFirstChild("Backdoors"),
+        Workspace:FindFirstChild("TheBackdoors")
+    }
     
-    -- Поиск в The Outdoors (Улица)
-    local outdoors = Workspace:FindFirstChild("Outdoors") or Workspace:FindFirstChild("TheOutdoors")
-    if outdoors then
-        searchInContainer(outdoors)
-    end
-    
-    -- Поиск в The Rooms (Комнаты)
-    local rooms = Workspace:FindFirstChild("Rooms") or Workspace:FindFirstChild("TheRooms")
-    if rooms then
-        searchInContainer(rooms)
-    end
-    
-    -- Поиск в The Backdoors (Задние двери)
-    local backdoors = Workspace:FindFirstChild("Backdoors") or Workspace:FindFirstChild("TheBackdoors")
-    if backdoors then
-        searchInContainer(backdoors)
-    end
-    
-    -- Поиск шкафов прямо в Workspace (на случай, если они там)
-    for _, child in pairs(Workspace:GetChildren()) do
-        if child:IsA("Model") and 
-           (child.Name == "Wardrobe" or 
-            child.Name == "Closet" or 
-            child.Name:find("Wardrobe") or 
-            child.Name:find("Closet")) then
-            
-            local main = child:FindFirstChild("Main") or 
-                        child:FindFirstChild("Handle") or 
-                        child:FindFirstChildWhichIsA("BasePart")
-            
-            if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
-                createESP(main, Color3.fromRGB(224, 145, 76), "Шкаф")
-                table.insert(trackedWardrobes, main)
-            end
+    for _, location in pairs(locationsToCheck) do
+        if location then
+            deepSearch(location, 0)
         end
     end
 end
@@ -372,23 +409,36 @@ local function updateESP()
                     if door and door.PrimaryPart then removeESP(door.PrimaryPart) end
                 end
             end
+            
+            -- ИЗМЕНЕНО: предметы с русскими названиями и индивидуальными цветами
             if ESPItems then
                 for _, room in pairs(currentRooms:GetChildren()) do
                     for _, descendant in pairs(room:GetDescendants()) do
-                        if descendant:IsA("Model") and table.find(itemNames, descendant.Name) then
-                            local part = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
-                            if part and not part:FindFirstChild("ESPBox") then
-                                createESP(part, Color3.fromRGB(255, 0, 255), descendant.Name)
+                        if descendant:IsA("Model") then
+                            for engName, rusName in pairs(itemNames) do
+                                if descendant.Name == engName then
+                                    local part = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
+                                    if part and not part:FindFirstChild("ESPBox") then
+                                        local color = itemColors[engName] or Color3.fromRGB(128, 128, 0)
+                                        createESP(part, color, rusName, 1)
+                                    end
+                                end
                             end
                         end
                     end
                 end
+                -- Поиск glowstick в шахтах
+                pcall(findGlowsticks)
             else
                 for _, room in pairs(currentRooms:GetChildren()) do
                     for _, descendant in pairs(room:GetDescendants()) do
-                        if descendant:IsA("Model") and table.find(itemNames, descendant.Name) then
-                            local part = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
-                            if part then removeESP(part) end
+                        if descendant:IsA("Model") then
+                            for engName, _ in pairs(itemNames) do
+                                if descendant.Name == engName then
+                                    local part = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
+                                    if part then removeESP(part) end
+                                end
+                            end
                         end
                     end
                 end
@@ -438,6 +488,28 @@ local function updateESP()
 end
 
 spawn(updateESP)
+
+local function setupSeekNotification()
+    if seekNotifyConn then seekNotifyConn:Disconnect() end
+    
+    seekNotifyConn = RunService.Heartbeat:Connect(function()
+        local seekMoving = Workspace:FindFirstChild("SeekMoving")
+        local seekChase = Workspace:FindFirstChild("SeekChase")
+        
+        if (seekMoving or seekChase) and SeekNotify then
+            if not getgenv().lastSeekNotify or tick() - getgenv().lastSeekNotify > 10 then
+                getgenv().lastSeekNotify = tick()
+                playAlertSound()
+                Rayfield:Notify({
+                    Title = "СКРИТЧ АКТИВЕН!",
+                    Content = "ВНИМАНИЕ: Скритч преследует тебя!",
+                    Duration = 5,
+                    Image = 4483362458
+                })
+            end
+        end
+    end)
+end
 
 -- Основное (читы)
 MainTab:CreateToggle({
@@ -555,6 +627,7 @@ MainTab:CreateToggle({
     CurrentValue = false,
     Flag = "MonsterNotifyV1",
     Callback = function(Value)
+        MonsterNotify = Value
         if Value then
             monsterNotifyConn = Workspace.ChildAdded:Connect(function(child)
                 if table.find(monsterNames, child.Name) then
@@ -569,6 +642,20 @@ MainTab:CreateToggle({
             end)
         else
             if monsterNotifyConn then monsterNotifyConn:Disconnect(); monsterNotifyConn = nil end
+        end
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Оповещение о скритче",
+    CurrentValue = false,
+    Flag = "SeekNotifyV1",
+    Callback = function(Value)
+        SeekNotify = Value
+        if Value then
+            setupSeekNotification()
+        else
+            if seekNotifyConn then seekNotifyConn:Disconnect(); seekNotifyConn = nil end
         end
     end,
 })
@@ -647,8 +734,8 @@ AuthorTab:CreateButton({
         if setclipboard then
             setclipboard("https://t.me/MakeinuHub")
             Rayfield:Notify({
-                Title = "Скопировано",
-                Content = "Надеюсь ты подпишешься на ТГК! <3",
+                Title = "Ссылка скопирована!",
+                Content = "Ссылка на Telegram канал скопирована",
                 Duration = 3,
                 Image = 4483362458
             })
@@ -675,8 +762,8 @@ LocalPlayer.CharacterAdded:Connect(function()
 end)
 
 Rayfield:Notify({
-    Title = "Shumakku (DOORS)",
-    Content = "ТГК: @MakeinuHub",
+    Title = "Shumakku (DOORS) готов!",
+    Content = "TG: @MakeinuHub | Удачи!",
     Duration = 8,
     Image = 4483362458
 })
