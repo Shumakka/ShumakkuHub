@@ -1,1 +1,680 @@
-local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit ;local v4=v3.bxor;local v5=table.concat;local v6=table.insert;local function v7(v72,v73) local v74={};for v154=1, #v72 do v6(v74,v0(v4(v1(v2(v72,v154,v154 + 1 )),v1(v2(v73,1 + (v154% #v73) ,1 + (v154% #v73) + 1 )))%256 ));end return v5(v74);end local v8={[v7("\250\230\226\26\202\146\233\53","\126\177\163\187\69\134\219\167")]=v7("\43\217\62\213\239\121\130\101\214\255\49\196\58\209\245\59\131\38\204\234\38","\156\67\173\74\165"),[v7("\2\150\101\63\152\25\109\17\142\122","\38\84\215\41\118\220\70")]={v7("\126\51\26\39\205\29\55\0\49\218\29\71\112\65\170\29\51\4\53\214","\158\48\118\66\114"),v7("\159\1\35\2\62\142\222\146\105\66\102\33\240","\155\203\68\112\86\19\197"),v7("\98\248\27\211\13\83\192\193\11\251\4\217\101","\152\38\189\86\156\32\24\133")},[v7("\223\118\139\106\222\118\132\109\195\120\137\121\207\98\132\101\217\100\148","\38\156\55\199")]=function() print(v7("\147\83\89\16\38\71\199\3\131\120\101\104\5\117\246\74\172\124\104\45\23\52\183\3\164\114\125\44\26\122\253\3\184\124\101\36\28\117\254\13\230\51","\35\200\29\28\72\115\20\154"));end};local v9=game:GetService(v7("\41\179\208\198\136\62\39","\84\121\223\177\191\237\76"));local v10=game:GetService(v7("\143\65\204\165\52\99\53\211\173\95\202\165","\161\219\54\169\192\90\48\80"));local v11=game:GetService(v7("\124\81\5\55\96\76\16\48\93\113\5\55\95\75\3\32","\69\41\34\96"));local v12=v9.LocalPlayer;local v13={[v7("\158\228\232\60\45\2\152","\75\220\163\183\106\98")]=Color3.fromRGB(17 -12 ,1554 -(647 + 902) ,12),[v7("\32\157\180\7\248\44\159\167","\185\98\218\235\87")]=Color3.fromRGB(35 -23 ,247 -(85 + 148) ,1315 -(426 + 863) ),[v7("\233\27\24\197\255\152\239","\202\171\92\71\134\190")]=Color3.fromRGB(16,19,34),[v7("\11\230\19\161\7\241\25\188","\232\73\161\76")]=Color3.fromRGB(8,46 -36 ,1674 -(873 + 781) ),[v7("\153\246\112\121\59\137\230\102\116\51","\126\219\185\34\61")]=Color3.fromRGB(30,46 -11 ,148 -93 ),[v7("\34\235\113\92\65\80\193\194\41\224","\135\108\174\62\18\30\23\147")]=Color3.fromRGB(0,106 + 149 ,517 -377 ),[v7("\152\204\5\229\39\130\26\234\147","\167\214\137\74\171\120\206\83")]=Color3.fromRGB(171 -51 ,255,201 -133 ),[v7("\165\213\29\115\199\149\174\212","\199\235\144\82\61\152")]=Color3.fromRGB(2202 -(414 + 1533) ,44 + 6 ,80),[v7("\41\51\150\5\56\55\148\9\34\36","\75\103\118\217")]=Color3.fromRGB(255,180,555 -(443 + 112) ),[v7("\233\113\95\58\134\60\235\97\85","\126\167\52\16\116\217")]=Color3.fromRGB(1479 -(888 + 591) ,170,658 -403 ),[v7("\230\11\15\174\139\46\212\225\26\5","\156\168\78\64\224\212\121")]=Color3.fromRGB(200,13 + 207 ,790 -580 ),[v7("\51\203\157\250\56\204\151\231\32\198\145","\174\103\142\197")]=Color3.fromRGB(210,90 + 140 ,107 + 113 ),[v7("\98\13\103\12\26\115\209\114","\152\54\72\63\88\69\62")]=Color3.fromRGB(13 + 107 ,266 -126 ,130),[v7("\224\225\214\104\235\224\199\113","\60\180\164\142")]=Color3.fromRGB(101 -46 ,1748 -(136 + 1542) ,213 -148 ),[v7("\108\123\61\29\24\192\61\118\113","\114\56\62\101\73\71\141")]=Color3.fromRGB(0 + 0 ,318 -118 ,80 + 30 ),[v7("\139\220\248\231\157\218\232","\164\216\137\187")]=Color3.fromRGB(486 -(68 + 418) ,691 -436 ,254 -114 ),[v7("\247\212\3\157\148","\107\178\134\81\210\198\158")]=Color3.fromRGB(221 + 34 ,1142 -(770 + 322) ,80)};local function v14(v75,v76,v77,v78,v79) local v80=0 + 0 ;local v81;while true do if ((0 + 0)==v80) then local v174=0;while true do if (0==v174) then v81=v10:Create(v75,TweenInfo.new(v77 or (0.3 + 0) ,v78 or Enum.EasingStyle.Quint ,v79 or Enum.EasingDirection.Out ),v76);v81:Play();v174=1;end if (v174==1) then v80=1 -0 ;break;end end end if (v80==(1 -0)) then return v81;end end end local function v15(v82,v83) local v84=0 -0 ;local v85;while true do if (v84==0) then v85=Instance.new(v82);for v188,v189 in pairs(v83 or {} ) do if (v188~=v7("\8\15\144\195\164\44","\202\88\110\226\166")) then pcall(function() v85[v188]=v189;end);end end v84=3 -2 ;end if (v84==(1 + 0)) then local v175=0 -0 ;while true do if (v175==(0 + 0)) then if (v83 and v83.Parent) then v85.Parent=v83.Parent;end return v85;end end end end end local function v16(v86,v87) return v15(v7("\246\38\161\248\216\205\10\144","\170\163\111\226\151"),{[v7("\50\63\160\54\75\37\27\16\52\187\45\93","\73\113\80\210\88\46\87")]=UDim.new(0 + 0 ,v87 or (5 + 1) ),[v7("\177\45\223\23\233\149","\135\225\76\173\114")]=v86});end local function v17(v88,v89,v90,v91) return v15(v7("\47\196\139\164\190\178\172\31","\199\122\141\216\208\204\221"),{[v7("\142\210\28\255\106","\150\205\189\112\144\24")]=v89 or v13.BORDER_DIM ,[v7("\17\140\182\79\15\134\20\3\54","\112\69\228\223\44\100\232\113")]=v90 or (3 -2) ,[v7("\224\13\6\221\165\108\135\198\26\9\208\175","\230\180\127\103\179\214\28")]=v91 or (0 -0) ,[v7("\188\4\77\67\234\85","\128\236\101\63\38\132\33")]=v88});end local function v18(v92,v93,v94,v95) local v96=0 + 0 ;while true do if (v96==1) then for v190=4 -3 , #v93 do local v191=0 -0 ;while true do if (v191==0) then if ( not v92 or  not v92.Parent) then return;end v92.Text=v93:sub(1,v190);v191=1 + 0 ;end if (v191==(4 -3)) then task.wait(v94 or (831.02 -(762 + 69)) );break;end end end break;end if (v96==(0 -0)) then v92.Text="";if v95 then v92.TextColor3=v95;end v96=1 + 0 ;end end end local function v19(v97,v98) local v99=0 + 0 ;while true do if (v99==(0 -0)) then local v177=0;while true do if (v177==0) then if (v97>=v98) then return v97;end return math.random(v97,v98);end end end end end local function v20() local v100=0;local v101;local v102;while true do if (v100==(0 + 0)) then v101=v7("\252\248\67\23\226\190\153\251\241\72\101\148\200\235\137\143","\175\204\201\113\36\214\139");v102="";v100=1;end if (v100==(1 + 0)) then for v192=1,31 -23  do local v193=157 -(8 + 149) ;local v194;while true do if (v193==0) then v194=math.random(1, #v101);v102=v102   .. v101:sub(v194,v194) ;break;end end end return v102;end end end pcall(function() if game:GetService(v7("\100\195\39\217\35\82\197","\100\39\172\85\188")):FindFirstChild(v7("\131\125\161\149\32\134\125\160\179\42\190\108\188\141","\83\205\24\217\224")) then game:GetService(v7("\197\202\223\56\193\208\196","\93\134\165\173")):FindFirstChild(v7("\144\247\217\215\41\229\183\103\141\235\210\214\63\195","\30\222\146\161\162\90\174\210")):Destroy();end end);pcall(function() if (v12:FindFirstChild(v7("\213\66\113\19\224\92\87\31\236","\106\133\46\16")) and v12.PlayerGui:FindFirstChild(v7("\118\37\107\233\73\107\93\57\64\229\73\84\93\45","\32\56\64\19\156\58"))) then v12.PlayerGui.NexusKeySystem:Destroy();end end);local v21=v15(v7("\105\203\247\83\95\252\167\79\193","\224\58\168\133\54\58\146"),{[v7("\119\87\70\248","\107\57\54\43\157\21\230\231")]=v7("\245\142\9\224\170\247\202\194\184\8\230\173\217\194","\175\187\235\113\149\217\188"),[v7("\24\166\146\92\239\120\97\19\189\133\73\241","\24\92\207\225\44\131\25")]=2319 -(1199 + 121) ,[v7("\98\212\182\67\9\120\108\198\177\101\21\110\78\199","\29\43\179\216\44\123")]=true,[v7("\143\220\51\73\169\246\46\127\173\216\55\66","\44\221\185\64")]=false,[v7("\59\206\70\91\118\25\197\77\87\114\23\238\71\77","\19\97\135\40\63")]=Enum.ZIndexBehavior.Sibling});local v22=pcall(function() v21.Parent=game:GetService(v7("\141\83\33\62\8\36\167","\81\206\60\83\91\79"));end);if  not v22 then v21.Parent=v12:WaitForChild(v7("\126\167\209\107\42\209\106\177\71","\196\46\203\176\18\79\163\45"));end local v23=v15(v7("\158\48\127\19\33","\143\216\66\30\126\68\155"),{[v7("\132\201\0\206","\129\202\168\109\171\165\195\183")]=v7("\0\89\52\211\218\6\233\50","\134\66\56\87\184\190\116"),[v7("\15\56\19\190","\85\92\81\105\219\121\139\65")]=UDim2.new(1 -0 ,0,2 -1 ,0),[v7("\205\188\67\76\104\214\242\189","\191\157\211\48\37\28")]=UDim2.new(0 + 0 ,0 -0 ,0,0),[v7("\253\30\247\23\61\205\16\225\18\62\252\16\248\19\40\140","\90\191\127\148\124")]=v13.BG_VOID,[v7("\90\134\45\28\127\149\33\2\118\131\26\5\121\137\61\7\121\149\43\25\123\158","\119\24\231\78")]=0.2 -0 ,[v7("\160\34\183\78\217\82\34\139\55\160\122\213\88\20\142","\113\226\77\197\42\188\32")]=0 + 0 ,[v7("\0\63\250\177\63\14","\213\90\118\148")]=1808 -(518 + 1289) ,[v7("\107\47\166\83\67\79","\45\59\78\212\54")]=v21});local v24=v15(v7("\54\68\130\134\131","\144\112\54\227\235\230\78\205"),{[v7("\157\41\2\249","\59\211\72\111\156\176")]=v7("\125\132\226\35\108\130\226\32","\77\46\231\131"),[v7("\137\93\172\69","\32\218\52\214")]=UDim2.new(1 -0 ,0 + 0 ,0 -0 ,45 + 15 ),[v7("\126\24\34\161\229\185\74\84","\58\46\119\81\200\145\208\37")]=UDim2.new(469 -(304 + 165) ,0 + 0 , -(160.1 -(54 + 106)),1969 -(1618 + 351) ),[v7("\9\141\51\167\174\175\57\62\130\52\143\166\177\57\57\223","\86\75\236\80\204\201\221")]=v13.NEON_GREEN,[v7("\80\64\116\142\249\153\125\84\121\129\202\153\115\79\100\149\255\153\119\79\116\156","\235\18\33\23\229\158")]=0.95 + 0 ,[v7("\114\181\211\191\85\168\242\178\74\191\241\178\72\191\205","\219\48\218\161")]=1016 -(10 + 1006) ,[v7("\222\88\114\77\222\87","\128\132\17\28\41\187\47")]=1 + 1 ,[v7("\49\51\20\63\83\21","\61\97\82\102\90")]=v23});task.spawn(function() while v21 and v21.Parent  do local v156=0 + 0 ;local v157;while true do if ((0 -0)==v156) then v157=1033 -(912 + 121) ;while true do if (v157==0) then v24.Position=UDim2.new(0 + 0 ,1289 -(1140 + 149) , -0.1,0 + 0 );v14(v24,{[v7("\156\33\184\66\211\94\17\7","\105\204\78\203\43\167\55\126")]=UDim2.new(0 -0 ,0,1.1,0 + 0 )},13 -9 ,Enum.EasingStyle.Linear);v157=1;end if (1==v157) then task.wait(5);break;end end break;end end end end);local v25=v15(v7("\131\184\34\19\22","\49\197\202\67\126\115\100\167"),{[v7("\25\90\210\44","\62\87\59\191\73\224\54")]=v7("\208\11\244\205\232\21","\169\135\98\154"),[v7("\248\126\62\81","\168\171\23\68\52\157\83")]=UDim2.new(0 -0 ,70 + 330 ,0,480),[v7("\196\126\230\164\49\36\136\250","\231\148\17\149\205\69\77")]=UDim2.new(0.5, -(694 -494),0.5, -240),[v7("\162\166\196\240\80\237\143\178\201\255\116\240\140\168\213\168","\159\224\199\167\155\55")]=v13.BG_PANEL,[v7("\213\242\63\217\240\225\51\199\249\247\8\192\246\253\47\194\246\225\57\220\244\234","\178\151\147\92")]=186 -(165 + 21) ,[v7("\174\242\94\54\23\94\73\133\231\73\2\27\84\127\128","\26\236\157\44\82\114\44")]=111 -(61 + 50) ,[v7("\16\7\219\95\47\54","\59\74\78\181")]=10,[v7("\21\208\72\95\189\49","\211\69\177\58\58")]=v21});v16(v25,3 + 3 );local v26=v17(v25,v13.NEON_GREEN,1,0.5 -0 );local v27=v15(v7("\145\247\120\248\236","\171\215\133\25\149\137"),{[v7("\207\201\63\255","\34\129\168\82\154\143\80\156")]=v7("\177\187\39\7\77\108\136\151","\233\229\210\83\107\40\46"),[v7("\242\75\40\211","\101\161\34\82\182")]=UDim2.new(1 -0 ,0 + 0 ,1460 -(1295 + 165) ,10 + 30 ),[v7("\216\2\74\247\207\235\141\32","\78\136\109\57\158\187\130\226")]=UDim2.new(0 + 0 ,1397 -(819 + 578) ,1402 -(331 + 1071) ,0),[v7("\28\62\250\250\57\45\246\228\48\59\218\254\50\48\235\162","\145\94\95\153")]=Color3.fromRGB(8,753 -(588 + 155) ,1300 -(546 + 736) ),[v7("\223\204\23\222\73\165\242\216\26\209\122\165\252\195\7\197\79\165\248\195\23\204","\215\157\173\116\181\46")]=0,[v7("\23\187\153\246\223\39\135\130\232\223\5\189\147\247\214","\186\85\212\235\146")]=0,[v7("\248\168\24\250\60\246","\56\162\225\118\158\89\142")]=1957 -(1834 + 103) ,[v7("\108\4\210\170\44\204","\184\60\101\160\207\66")]=v25});v16(v27,6);v15(v7("\23\144\125\177\52","\220\81\226\28"),{[v7("\61\212\143\254","\167\115\181\226\155\138")]=v7("\214\43\243\80\126\83\199\240\4\238\68","\166\130\66\135\60\27\17"),[v7("\119\67\212\112","\80\36\42\174\21")]=UDim2.new(1,0 + 0 ,0 -0 ,1776 -(1536 + 230) ),[v7("\126\31\36\115\90\25\56\116","\26\46\112\87")]=UDim2.new(491 -(128 + 363) ,0 + 0 ,1, -10),[v7("\155\34\168\127\184\173\74\161\183\39\136\123\179\176\87\231","\212\217\67\203\20\223\223\37")]=Color3.fromRGB(8,24 -14 ,5 + 13 ),[v7("\152\140\171\217\189\159\167\199\180\137\156\192\187\131\187\194\187\159\173\220\185\148","\178\218\237\200")]=0 -0 ,[v7("\148\186\244\212\179\167\213\217\172\176\214\217\174\176\234","\176\214\213\134")]=0 -0 ,[v7("\206\132\184\208\173\78","\57\148\205\214\180\200\54")]=48 -28 ,[v7("\34\252\39\49\120\6","\22\114\157\85\84")]=v27});v15(v7("\226\217\18\201\88","\200\164\171\115\164\61\150"),{[v7("\144\245\14\64","\227\222\148\99\37")]=v7("\17\93\70\226\246\62\126\91\248\252","\153\83\50\50\150"),[v7("\110\127\105\25","\45\61\22\19\124\19\203")]=UDim2.new(1 + 0 ,1009 -(615 + 394) ,0 + 0 ,1),[v7("\241\29\30\252\22\121\182\207","\217\161\114\109\149\98\16")]=UDim2.new(0 + 0 ,0 -0 ,4 -3 , -(652 -(59 + 592))),[v7("\48\33\59\119\187\102\29\53\54\120\159\123\30\47\42\47","\20\114\64\88\28\220")]=v13.NEON_GREEN,[v7("\19\0\209\191\255\194\178\36\15\214\128\234\209\179\34\17\211\166\253\222\190\40","\221\81\97\178\212\152\176")]=0.5 -0 ,[v7("\239\232\15\255\31\223\212\20\225\31\253\238\5\254\22","\122\173\135\125\155")]=0 -0 ,[v7("\190\232\14\189\58\41","\168\228\161\96\217\95\81")]=21,[v7("\235\208\60\89\33\67","\55\187\177\78\60\79")]=v27});local v28={v13.NEON_RED,v13.NEON_AMBER,v13.NEON_GREEN};for v104,v105 in ipairs(v28) do local v106=171 -(70 + 101) ;local v107;while true do if (v106==0) then v107=v15(v7("\11\220\94\230\67","\224\77\174\63\139\38\175"),{[v7("\170\64\85\43","\78\228\33\56")]=v7("\234\113\166","\229\174\30\210\99")   .. v104 ,[v7("\40\228\156\84","\89\123\141\230\49\141\93")]=UDim2.new(0 -0 ,9 + 3 ,0,12),[v7("\195\126\229\5\4\67\252\127","\42\147\17\150\108\112")]=UDim2.new(0 -0 ,12 + ((v104-1) * 20) ,241.5 -(123 + 118) , -6),[v7("\45\167\46\116\224\250\0\179\35\123\196\231\3\169\63\44","\136\111\198\77\31\135")]=v105,[v7("\32\8\164\93\186\246\24\188\12\13\147\68\188\234\4\185\3\27\162\88\190\253","\201\98\105\199\54\221\132\119")]=0.2,[v7("\155\3\145\37\7\39\159\176\22\134\17\11\45\169\181","\204\217\108\227\65\98\85")]=0,[v7("\100\234\251\225\41\216","\160\62\163\149\133\76")]=6 + 16 ,[v7("\230\161\31\42\205\194","\163\182\192\109\79")]=v27});v16(v107,6);break;end end end v15(v7("\0\35\24\212\217\53\36\5\204","\149\84\70\96\160"),{[v7("\22\7\0\232","\141\88\102\109")]=v7("\135\90\222\124\31\9\80\217\167","\161\211\51\170\16\122\93\53"),[v7("\200\167\168\45","\72\155\206\210")]=UDim2.new(1 + 0 , -(1539 -(653 + 746)),1,0 -0 ),[v7("\118\117\71\7\39\79\117\90","\83\38\26\52\110")]=UDim2.new(0 -0 ,214 -134 ,0 + 0 ,0),[v7("\122\22\36\77\95\5\40\83\86\19\19\84\89\25\52\86\89\5\34\72\91\14","\38\56\119\71")]=1 + 0 ,[v7("\199\234\64\194","\54\147\143\56\182\69")]="⚡ SHUMAKKU // DOORS",[v7("\226\132\231\93\236\223\155\250","\191\182\225\159\41")]=13 + 1 ,[v7("\13\29\38\65","\162\75\114\72\53\235\231")]=Enum.Font.Code,[v7("\184\57\92\246\112\13\128\51\86\177","\98\236\92\36\130\51")]=v13.NEON_GREEN,[v7("\144\28\20\174\125\137\185\57\163\23\1\191\75\188","\80\196\121\108\218\37\200\213")]=Enum.TextXAlignment.Left,[v7("\58\90\12\123\78\22","\234\96\19\98\31\43\110")]=3 + 19 ,[v7("\54\30\64\194\162\102","\235\102\127\50\167\204\18")]=v27});local v29=v15(v7("\100\164\237\55\102\59\68\181\250\45","\78\48\193\149\67\36"),{[v7("\30\31\141\29","\33\80\126\224\120")]=v7("\207\164\12\215\89\206\188\13","\60\140\200\99\164"),[v7("\180\253\30\35","\194\231\148\100\70")]=UDim2.new(0 + 0 ,73 -43 ,0 + 0 ,30),[v7("\118\67\210\170\226\193\73\66","\168\38\44\161\195\150")]=UDim2.new(1 -0 , -38,1234.5 -(885 + 349) , -(12 + 3)),[v7("\162\253\129\125\55\250\185\3\142\248\161\121\60\231\164\69","\118\224\156\226\22\80\136\214")]=v13.NEON_RED,[v7("\96\239\90\139\69\252\86\149\76\234\109\146\67\224\74\144\67\252\92\142\65\247","\224\34\142\57")]=0.8 -0 ,[v7("\252\168\215\217\118\227\110\7\196\162\245\212\107\244\81","\110\190\199\165\189\19\145\61")]=0,[v7("\238\238\111\252","\167\186\139\23\136\235")]="×",[v7("\46\176\144\25\57\186\132\2\8\230","\109\122\213\232")]=v13.NEON_RED,[v7("\218\242\186\36\221\254\184\53","\80\142\151\194")]=20,[v7("\37\201\121\88","\44\99\166\23")]=Enum.Font.Code,[v7("\93\226\61\57\17\177\104\227\38\56\16\171\112\248\59","\196\28\151\73\86\83")]=false,[v7("\201\42\39\20\135\64","\22\147\99\73\112\226\56\120")]=22,[v7("\136\116\240\240\131
+-- Shumakku (DOORS)
+-- By Shumakku
+-- Telegram: https://t.me/ShumakkuScript
+
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Shumakku (DOORS)",
+    LoadingTitle = "Shumakku загружается...",
+    LoadingSubtitle = "ЕЩЕ СКРИПТЫ: @ShumakkuScript",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "DoorsCheats_Shumakku"
+    }
+})
+
+local MainTab = Window:CreateTab("Основное", 4483362458)
+local AuthorTab = Window:CreateTab("Автор", 4483362458)
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local ESPDoors = false
+local ESPKeys = false
+local ESPItems = false
+local ESPLevers = false
+local ESPMonsters = false
+local ESPPlayers = false
+local ESPBooks = false
+local ESPWardrobes = false
+local MonsterNotify = false
+
+local fullbrightConn = nil
+local fovConn = nil
+local speedConn = nil
+local monsterNotifyConn = nil
+
+local monsterNames = {
+    ["RushMoving"] = "Раш",
+    ["AmbushMoving"] = "Амбуш",
+    ["Eyes"] = "Глаза",
+    ["Halt"] = "Хелт",
+    ["SeekMoving"] = "Сик",
+    ["A60"] = "А-60",
+    ["A120"] = "А-120"
+}
+
+local itemNames = {
+    ["Crucifix"] = "Распятие",
+    ["Flashlight"] = "Фонарик",
+    ["Lighter"] = "Зажигалка",
+    ["Lockpick"] = "Отмычка",
+    ["SkeletonKey"] = "Скелет-ключ",
+    ["Battery"] = "Батарейка",
+    ["Vitamins"] = "Витамины",
+    ["Smoothie"] = "Смузи",
+    ["Candle"] = "Свеча",
+    ["Bandage"] = "Бандаж"
+}
+
+local itemColors = {
+    ["Crucifix"] = Color3.fromRGB(255, 215, 0),
+    ["Flashlight"] = Color3.fromRGB(255, 255, 0),
+    ["Lighter"] = Color3.fromRGB(255, 165, 0),
+    ["Lockpick"] = Color3.fromRGB(192, 192, 192),
+    ["SkeletonKey"] = Color3.fromRGB(255, 255, 255),
+    ["Battery"] = Color3.fromRGB(50, 205, 50),
+    ["Vitamins"] = Color3.fromRGB(255, 105, 180),
+    ["Smoothie"] = Color3.fromRGB(255, 20, 147),
+    ["Candle"] = Color3.fromRGB(255, 140, 0),
+    ["Bandage"] = Color3.fromRGB(255, 255, 255)
+}
+
+local defaultFOV = 70
+local defaultSpeed = 15
+local currentFOV = defaultFOV
+local currentSpeed = defaultSpeed
+local seekChaseSpeed = 23
+
+local trackedBooks = {}
+local trackedFigure50 = nil
+local trackedFigure100 = nil
+local trackedWardrobes = {}
+local trackedKeys = {}
+local trackedLevers = {}
+
+local function playAlertSound()
+    pcall(function()
+        local sound = Instance.new("Sound")
+        sound.SoundId = "rbxassetid://124951621656853"
+        sound.Volume = 1
+        sound.Parent = game:GetService("SoundService")
+        sound:Play()
+        game:GetService("Debris"):AddItem(sound, 3)
+    end)
+end
+
+local function createESP(part, color, name, sizeMultiplier, showText, isItem)
+    if not part or not part:IsA("BasePart") then return end
+    
+    sizeMultiplier = sizeMultiplier or 1
+    showText = showText == nil and true or showText
+    
+    pcall(function()
+        if part:FindFirstChild("ESPBox") then part.ESPBox:Destroy() end
+        if part:FindFirstChild("ESPBillboard") then part.ESPBillboard:Destroy() end
+        
+        local boxSize
+        
+        if isItem then
+            local maxSize = math.max(part.Size.X, part.Size.Y, part.Size.Z)
+            boxSize = Vector3.new(maxSize * 0.4, maxSize * 0.4, maxSize * 0.4)
+        else
+            boxSize = part.Size * sizeMultiplier
+        end
+        
+        local box = Instance.new("BoxHandleAdornment")
+        box.Name = "ESPBox"
+        box.Parent = part
+        box.Adornee = part
+        box.Size = boxSize
+        box.Color3 = color
+        box.Transparency = 0.3
+        box.AlwaysOnTop = true
+        box.ZIndex = 10
+        box.Visible = true
+        
+        if showText and name and name ~= "" then
+            local billboard = Instance.new("BillboardGui")
+            billboard.Name = "ESPBillboard"
+            billboard.Parent = part
+            billboard.Adornee = part
+            billboard.Size = UDim2.new(0, 200, 0, 50)
+            billboard.StudsOffset = Vector3.new(0, 4, 0)
+            billboard.AlwaysOnTop = true
+            
+            local textLabel = Instance.new("TextLabel")
+            textLabel.Parent = billboard
+            textLabel.Size = UDim2.new(1, 0, 1, 0)
+            textLabel.BackgroundTransparency = 1
+            textLabel.Text = name
+            textLabel.TextColor3 = color
+            textLabel.TextScaled = true
+            textLabel.Font = Enum.Font.SourceSansBold
+            textLabel.TextStrokeTransparency = 0
+            textLabel.TextStrokeColor3 = Color3.new(0,0,0)
+        end
+    end)
+end
+
+local function removeESP(part)
+    pcall(function()
+        if part:FindFirstChild("ESPBox") then part.ESPBox:Destroy() end
+        if part:FindFirstChild("ESPBillboard") then part.ESPBillboard:Destroy() end
+    end)
+end
+
+local function findBooks()
+    if not ESPBooks then
+        for _, part in pairs(trackedBooks) do removeESP(part) end
+        trackedBooks = {}
+        return
+    end
+    local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+    if not currentRooms then return end
+    local room50 = currentRooms:FindFirstChild("50")
+    if room50 then
+        local assets = room50:FindFirstChild("Assets")
+        if assets then
+            for _, bookshelf in pairs(assets:GetChildren()) do
+                if bookshelf.Name:find("Bookshelves") then
+                    for _, item in pairs(bookshelf:GetChildren()) do
+                        local liveHintBook = item:FindFirstChild("LiveHintBook")
+                        if liveHintBook then
+                            local base = liveHintBook:FindFirstChild("Base")
+                            if base and base:IsA("BasePart") and not base:FindFirstChild("ESPBox") then
+                                createESP(base, Color3.fromRGB(255, 255, 0), "", 1, false)
+                                table.insert(trackedBooks, base)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    local room100 = currentRooms:FindFirstChild("100")
+    if room100 then
+        for _, child in pairs(room100:GetChildren()) do
+            local base = child:FindFirstChild("Base")
+            if base and base:IsA("BasePart") and not base:FindFirstChild("ESPBox") then
+                createESP(base, Color3.fromRGB(255, 255, 0), "", 1, false)
+                table.insert(trackedBooks, base)
+            end
+        end
+    end
+end
+
+local function findFigure()
+    if not ESPMonsters then
+        if trackedFigure50 then removeESP(trackedFigure50); trackedFigure50 = nil end
+        if trackedFigure100 then removeESP(trackedFigure100); trackedFigure100 = nil end
+        return
+    end
+    local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+    if not currentRooms then return end
+    local room50 = currentRooms:FindFirstChild("50")
+    if room50 then
+        local figureSetup = room50:FindFirstChild("FigureSetup")
+        if figureSetup then
+            local figureRig = figureSetup:FindFirstChild("FigureRig")
+            if figureRig then
+                local hitbox = figureRig:FindFirstChild("Hitbox")
+                if hitbox and hitbox:IsA("BasePart") and not hitbox:FindFirstChild("ESPBox") then
+                    createESP(hitbox, Color3.fromRGB(255, 0, 0), "Монстр: Figure")
+                    trackedFigure50 = hitbox
+                end
+            end
+        end
+    end
+    local room100 = currentRooms:FindFirstChild("100")
+    if room100 then
+        local figureSetup = room100:FindFirstChild("FigureSetup")
+        if figureSetup then
+            local figureRig = figureSetup:FindFirstChild("FigureRig")
+            if figureRig then
+                local hitbox = figureRig:FindFirstChild("Hitbox")
+                if hitbox and hitbox:IsA("BasePart") and not hitbox:FindFirstChild("ESPBox") then
+                    createESP(hitbox, Color3.fromRGB(255, 0, 0), "Монстр: Figure")
+                    trackedFigure100 = hitbox
+                end
+            end
+        end
+    end
+end
+
+local function findWardrobes()
+    if not ESPWardrobes then
+        for _, part in pairs(trackedWardrobes) do removeESP(part) end
+        trackedWardrobes = {}
+        return
+    end
+    
+    local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+    if not currentRooms then return end
+    
+    for _, room in pairs(currentRooms:GetChildren()) do
+        local assets = room:FindFirstChild("Assets")
+        if assets then
+            for _, wardrobe in pairs(assets:GetChildren()) do
+                if wardrobe.Name == "Wardrobe" then
+                    local main = wardrobe:FindFirstChild("Main")
+                    if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
+                        createESP(main, Color3.fromRGB(224, 145, 76), "Шкаф")
+                        table.insert(trackedWardrobes, main)
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function findKeys()
+    if not ESPKeys then
+        for _, part in pairs(trackedKeys) do removeESP(part) end
+        trackedKeys = {}
+        return
+    end
+    
+    local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+    if not currentRooms then return end
+    
+    for _, room in pairs(currentRooms:GetChildren()) do
+        local assets = room:FindFirstChild("Assets")
+        if assets then
+            local keyObtain = assets:FindFirstChild("KeyObtain")
+            if keyObtain then
+                local hitbox = keyObtain:FindFirstChild("Hitbox")
+                if hitbox and hitbox:IsA("BasePart") and not hitbox:FindFirstChild("ESPBox") then
+                    createESP(hitbox, Color3.fromRGB(255, 255, 0), "Ключ", 0.5, true, true)
+                    table.insert(trackedKeys, hitbox)
+                end
+            end
+            
+            for _, child in pairs(assets:GetDescendants()) do
+                if child.Name == "KeyObtain" and child:IsA("Model") then
+                    local hitbox = child:FindFirstChild("Hitbox")
+                    if hitbox and hitbox:IsA("BasePart") and not hitbox:FindFirstChild("ESPBox") then
+                        createESP(hitbox, Color3.fromRGB(255, 255, 0), "Ключ", 0.5, true, true)
+                        table.insert(trackedKeys, hitbox)
+                    end
+                end
+            end
+        end
+    end
+end
+
+local function findLevers()
+    if not ESPLevers then
+        for _, part in pairs(trackedLevers) do removeESP(part) end
+        trackedLevers = {}
+        return
+    end
+    
+    local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+    if not currentRooms then return end
+    
+    for _, room in pairs(currentRooms:GetChildren()) do
+        local assets = room:FindFirstChild("Assets")
+        if assets then
+            local leverForGate = assets:FindFirstChild("LeverForGate")
+            if leverForGate then
+                local main = leverForGate:FindFirstChild("Main")
+                if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
+                    createESP(main, Color3.fromRGB(255, 165, 0), "Рычаг")
+                    table.insert(trackedLevers, main)
+                end
+            end
+        end
+    end
+end
+
+local function updateESP()
+    while true do
+        pcall(function()
+            local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+            if not currentRooms then return end
+            
+            if ESPDoors then
+                for _, room in pairs(currentRooms:GetChildren()) do
+                    local door = room:FindFirstChild("Door")
+                    if door and door.PrimaryPart and not door.PrimaryPart:FindFirstChild("ESPBox") then
+                        local roomNum = tonumber(room.Name) or 0
+                        createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), tostring(roomNum + 1), 1)
+                    end
+                end
+            else
+                for _, room in pairs(currentRooms:GetChildren()) do
+                    local door = room:FindFirstChild("Door")
+                    if door and door.PrimaryPart then removeESP(door.PrimaryPart) end
+                end
+            end
+            
+            if ESPItems then
+                for _, room in pairs(currentRooms:GetChildren()) do
+                    for _, descendant in pairs(room:GetDescendants()) do
+                        if descendant:IsA("Model") then
+                            for engName, rusName in pairs(itemNames) do
+                                if descendant.Name == engName then
+                                    local part = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
+                                    if part and not part:FindFirstChild("ESPBox") then
+                                        local color = itemColors[engName] or Color3.fromRGB(128, 128, 0)
+                                        createESP(part, color, rusName, 1, true, true)
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            else
+                for _, room in pairs(currentRooms:GetChildren()) do
+                    for _, descendant in pairs(room:GetDescendants()) do
+                        if descendant:IsA("Model") then
+                            for engName, _ in pairs(itemNames) do
+                                if descendant.Name == engName then
+                                    local part = descendant.PrimaryPart or descendant:FindFirstChildWhichIsA("BasePart")
+                                    if part then removeESP(part) end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        
+        pcall(findBooks)
+        pcall(findFigure)
+        pcall(findWardrobes)
+        pcall(findKeys)
+        pcall(findLevers)
+        
+        pcall(function()
+            if ESPMonsters then
+                for _, monster in pairs(Workspace:GetChildren()) do
+                    if monster:IsA("Model") then
+                        for engName, rusName in pairs(monsterNames) do
+                            if monster.Name == engName then
+                                local part = monster.PrimaryPart or monster:FindFirstChild("HumanoidRootPart") or monster:FindFirstChildWhichIsA("BasePart")
+                                if part and not part:FindFirstChild("ESPBox") then
+                                    createESP(part, Color3.fromRGB(255, 0, 0), "Монстр: " .. rusName, 1)
+                                end
+                                break
+                            end
+                        end
+                    end
+                end
+            else
+                for _, monster in pairs(Workspace:GetChildren()) do
+                    if monster:IsA("Model") then
+                        for engName, _ in pairs(monsterNames) do
+                            if monster.Name == engName then
+                                local part = monster.PrimaryPart or monster:FindFirstChild("HumanoidRootPart") or monster:FindFirstChildWhichIsA("BasePart")
+                                if part then removeESP(part) end
+                                break
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+        
+        pcall(function()
+            if ESPPlayers then
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= LocalPlayer and player.Character and player.Character.PrimaryPart and not player.Character.PrimaryPart:FindFirstChild("ESPBox") then
+                        createESP(player.Character.PrimaryPart, Color3.fromRGB(0, 255, 255), player.Name, 1)
+                    end
+                end
+            else
+                for _, player in pairs(Players:GetPlayers()) do
+                    if player ~= LocalPlayer and player.Character and player.Character.PrimaryPart then
+                        removeESP(player.Character.PrimaryPart)
+                    end
+                end
+            end
+        end)
+        
+        wait(0.5)
+    end
+end
+
+spawn(updateESP)
+
+MainTab:CreateToggle({
+    Name = "Освещение",
+    CurrentValue = false,
+    Flag = "FullbrightV1",
+    Callback = function(Value)
+        if Value then
+            fullbrightConn = RunService.Heartbeat:Connect(function()
+                Lighting.Brightness = 2
+                Lighting.ClockTime = 14
+                Lighting.FogEnd = 9e9
+                Lighting.GlobalShadows = false
+                Lighting.OutdoorAmbient = Color3.new(1,1,1)
+                Lighting.Ambient = Color3.new(1,1,1)
+                Lighting.ShadowSoftness = 0
+            end)
+        else
+            if fullbrightConn then fullbrightConn:Disconnect(); fullbrightConn = nil end
+            Lighting.Brightness = 1
+            Lighting.ClockTime = 0
+            Lighting.FogEnd = 100000
+            Lighting.GlobalShadows = true
+            Lighting.OutdoorAmbient = Color3.new(0.5,0.5,0.5)
+            Lighting.Ambient = Color3.new(0.4,0.4,0.5)
+        end
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Двери (ESP)",
+    CurrentValue = false,
+    Flag = "ESPDoorsV1",
+    Callback = function(Value)
+        ESPDoors = Value
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Ключ (ESP)",
+    CurrentValue = false,
+    Flag = "ESPKeysV1",
+    Callback = function(Value)
+        ESPKeys = Value
+        if not Value then
+            for _, part in pairs(trackedKeys) do removeESP(part) end
+            trackedKeys = {}
+        end
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Предметы (ESP)",
+    CurrentValue = false,
+    Flag = "ESPItemsV1",
+    Callback = function(Value)
+        ESPItems = Value
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Рычаг (ESP)",
+    CurrentValue = false,
+    Flag = "ESPLeversV1",
+    Callback = function(Value)
+        ESPLevers = Value
+        if not Value then
+            for _, part in pairs(trackedLevers) do removeESP(part) end
+            trackedLevers = {}
+        end
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Шкафы (ESP)",
+    CurrentValue = false,
+    Flag = "ESPWardrobesV1",
+    Callback = function(Value)
+        ESPWardrobes = Value
+        if not Value then
+            for _, part in pairs(trackedWardrobes) do removeESP(part) end
+            trackedWardrobes = {}
+        end
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Книги/Предохранители (ESP)",
+    CurrentValue = false,
+    Flag = "ESPBooksV1",
+    Callback = function(Value)
+        ESPBooks = Value
+        if not Value then
+            for _, part in pairs(trackedBooks) do removeESP(part) end
+            trackedBooks = {}
+        end
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Монстры (ESP)",
+    CurrentValue = false,
+    Flag = "ESPMonstersV1",
+    Callback = function(Value)
+        ESPMonsters = Value
+        if not Value then
+            if trackedFigure50 then removeESP(trackedFigure50); trackedFigure50 = nil end
+            if trackedFigure100 then removeESP(trackedFigure100); trackedFigure100 = nil end
+        end
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Оповещение о монстрах",
+    CurrentValue = false,
+    Flag = "MonsterNotifyV1",
+    Callback = function(Value)
+        MonsterNotify = Value
+        if Value then
+            monsterNotifyConn = Workspace.ChildAdded:Connect(function(child)
+                for engName, rusName in pairs(monsterNames) do
+                    if child.Name == engName then
+                        playAlertSound()
+                        Rayfield:Notify({
+                            Title = "МОНСТР ПОЯВИЛСЯ!",
+                            Content = "Внимание: " .. rusName .. " появился!",
+                            Duration = 5,
+                            Image = 4483362458
+                        })
+                        break
+                    end
+                end
+            end)
+        else
+            if monsterNotifyConn then monsterNotifyConn:Disconnect(); monsterNotifyConn = nil end
+        end
+    end,
+})
+
+MainTab:CreateToggle({
+    Name = "Другие игроки (ESP)",
+    CurrentValue = false,
+    Flag = "ESPPlayersV1",
+    Callback = function(Value)
+        ESPPlayers = Value
+    end,
+})
+
+MainTab:CreateSlider({
+    Name = "FOV",
+    Range = {30, 120},
+    Increment = 1,
+    Suffix = "°",
+    CurrentValue = defaultFOV,
+    Flag = "FOVV1",
+    Callback = function(Value)
+        currentFOV = Value
+        if fovConn then fovConn:Disconnect() end
+        local camera = Workspace.CurrentCamera
+        fovConn = RunService.RenderStepped:Connect(function()
+            camera.FieldOfView = currentFOV
+        end)
+    end,
+})
+
+MainTab:CreateSlider({
+    Name = "Скорость (15-21)",
+    Range = {15, 21},
+    Increment = 1,
+    Suffix = "",
+    CurrentValue = defaultSpeed,
+    Flag = "SpeedV1",
+    Callback = function(Value)
+        currentSpeed = Value
+        if speedConn then speedConn:Disconnect() end
+        speedConn = RunService.Heartbeat:Connect(function()
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("Humanoid") then
+                local seekActive = Workspace:FindFirstChild("SeekMoving") ~= nil
+                char.Humanoid.WalkSpeed = seekActive and seekChaseSpeed or currentSpeed
+            end
+        end)
+    end,
+})
+
+MainTab:CreateButton({
+    Name = "Вернуть FOV (70°)",
+    Callback = function()
+        currentFOV = defaultFOV
+        if fovConn then fovConn:Disconnect(); fovConn = nil end
+        Workspace.CurrentCamera.FieldOfView = defaultFOV
+    end,
+})
+
+MainTab:CreateButton({
+    Name = "Вернуть скорость (16)",
+    Callback = function()
+        currentSpeed = defaultSpeed
+        if speedConn then speedConn:Disconnect(); speedConn = nil end
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = defaultSpeed
+        end
+    end,
+})
+
+AuthorTab:CreateButton({
+    Name = "Telegram канал",
+    Callback = function()
+        if setclipboard then
+            setclipboard("https://t.me/ShumakkuScript")
+            Rayfield:Notify({
+                Title = "Скопировано!",
+                Content = "Надеюсь ты присоединишься <3",
+                Duration = 3,
+                Image = 4483362458
+            })
+        else
+            Rayfield:Notify({
+                Title = "Ошибка!",
+                Content = "Буфер обмена отключен",
+                Duration = 3,
+                Image = 4483362458
+            })
+        end
+    end,
+})
+
+LocalPlayer.CharacterAdded:Connect(function()
+    wait(1)
+    local char = LocalPlayer.Character
+    if fovConn then
+        Workspace.CurrentCamera.FieldOfView = currentFOV
+    end
+    if speedConn and char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.WalkSpeed = currentSpeed
+    end
+end)
+
+Rayfield:Notify({
+    Title = "Shumakku DOORS (Only Hotel)",
+    Content = "ТГК: ShumakkuScript",
+    Duration = 8,
+    Image = 4483362458
+})
