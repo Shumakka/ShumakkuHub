@@ -116,10 +116,10 @@ local function createESP(part, color, name, sizeMultiplier, showText, isItem)
         
         local boxSize
         
-        -- Для предметов делаем квадратный размер 0.6
+                -- Для предметов делаем квадратный размер 0.4
         if isItem then
             local maxSize = math.max(part.Size.X, part.Size.Y, part.Size.Z)
-            boxSize = Vector3.new(maxSize * 0.6, maxSize * 0.6, maxSize * 0.6)
+            boxSize = Vector3.new(maxSize * 0.4, maxSize * 0.4, maxSize * 0.4)
         else
             boxSize = part.Size * sizeMultiplier
         end
