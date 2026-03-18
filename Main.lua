@@ -60,16 +60,16 @@ local itemNames = {
 
 -- Цвета для разных типов предметов
 local itemColors = {
-    ["Crucifix"] = Color3.fromRGB(255, 215, 0),    -- Золотой
-    ["Flashlight"] = Color3.fromRGB(255, 255, 0),   -- Желтый
-    ["Lighter"] = Color3.fromRGB(255, 165, 0),      -- Оранжевый
-    ["Lockpick"] = Color3.fromRGB(192, 192, 192),   -- Серебряный
-    ["SkeletonKey"] = Color3.fromRGB(255, 255, 255), -- Белый
-    ["Battery"] = Color3.fromRGB(50, 205, 50),      -- Лаймовый
-    ["Vitamins"] = Color3.fromRGB(255, 105, 180),   -- Розовый
-    ["Smoothie"] = Color3.fromRGB(255, 20, 147),    -- Глубокий розовый
-    ["Candle"] = Color3.fromRGB(255, 140, 0),       -- Темно-оранжевый
-    ["Bandage"] = Color3.fromRGB(255, 255, 255)     -- Белый
+    ["Crucifix"] = Color3.fromRGB(255, 215, 0),
+    ["Flashlight"] = Color3.fromRGB(255, 255, 0),
+    ["Lighter"] = Color3.fromRGB(255, 165, 0),
+    ["Lockpick"] = Color3.fromRGB(192, 192, 192),
+    ["SkeletonKey"] = Color3.fromRGB(255, 255, 255),
+    ["Battery"] = Color3.fromRGB(50, 205, 50),
+    ["Vitamins"] = Color3.fromRGB(255, 105, 180),
+    ["Smoothie"] = Color3.fromRGB(255, 20, 147),
+    ["Candle"] = Color3.fromRGB(255, 140, 0),
+    ["Bandage"] = Color3.fromRGB(255, 255, 255)
 }
 
 local defaultFOV = 70
@@ -96,7 +96,7 @@ local function playAlertSound()
     end)
 end
 
--- ИЗМЕНЕНО: функция создания ESP с увеличенными хитбоксами в 2 раза
+-- функция создания ESP
 local function createESP(part, color, name, sizeMultiplier, showText, isItem)
     if not part or not part:IsA("BasePart") then return end
     sizeMultiplier = sizeMultiplier or 1
@@ -107,12 +107,10 @@ local function createESP(part, color, name, sizeMultiplier, showText, isItem)
         
         local boxSize
         
-        -- Для предметов делаем размер в 2 раза больше (было 0.3, стало 0.6)
         if isItem then
             local minSize = math.min(part.Size.X, part.Size.Y, part.Size.Z)
             boxSize = Vector3.new(minSize * 0.6, minSize * 0.6, minSize * 0.6)
         else
-            -- Для остального увеличиваем в 2 раза
             boxSize = part.Size * sizeMultiplier * 2
         end
         
@@ -234,7 +232,6 @@ local function findFigure()
     end
 end
 
--- ВОССТАНОВЛЕНО: оригинальная функция поиска шкафов из старого кода (только отель)
 local function findWardrobes()
     if not ESPWardrobes then
         for _, part in pairs(trackedWardrobes) do removeESP(part) end
@@ -360,7 +357,7 @@ local function updateESP()
                 end
             end
             
-            -- Предметы (уменьшенный размер)
+            -- Предметы
             if ESPItems then
                 for _, room in pairs(currentRooms:GetChildren()) do
                     for _, descendant in pairs(room:GetDescendants()) do
@@ -572,7 +569,6 @@ MainTab:CreateToggle({
     end,
 })
 
--- НОВОЕ: отдельное оповещение о скритче
 MainTab:CreateToggle({
     Name = "Оповещение о скритче",
     CurrentValue = false,
