@@ -191,25 +191,108 @@ local function findFigure()
     end
 end
 
+-- ОБНОВЛЕННАЯ функция для поиска шкафов во всех измерениях
 local function findWardrobes()
     if not ESPWardrobes then
         for _, part in pairs(trackedWardrobes) do removeESP(part) end
         trackedWardrobes = {}
         return
     end
-    local currentRooms = Workspace:FindFirstChild("CurrentRooms")
-    if not currentRooms then return end
-    for _, room in pairs(currentRooms:GetChildren()) do
-        local assets = room:FindFirstChild("Assets")
+    
+    -- Поиск в разных измерениях
+    local function searchInContainer(container)
+        if not container then return end
+        
+        -- Поиск шкафов в папке Assets (как в отеле)
+        local assets = container:FindFirstChild("Assets")
         if assets then
             for _, wardrobe in pairs(assets:GetChildren()) do
-                if wardrobe.Name == "Wardrobe" then
-                    local main = wardrobe:FindFirstChild("Main")
+                -- Разные названия шкафов в разных измерениях
+                if wardrobe.Name == "Wardrobe" or 
+                   wardrobe.Name == "Closet" or 
+                   wardrobe.Name:find("Wardrobe") or 
+                   wardrobe.Name:find("Closet") or
+                   wardrobe.Name:find("шкаф") then
+                    
+                    local main = wardrobe:FindFirstChild("Main") or 
+                                wardrobe:FindFirstChild("Handle") or 
+                                wardrobe:FindFirstChildWhichIsA("BasePart")
+                    
                     if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
                         createESP(main, Color3.fromRGB(224, 145, 76), "Шкаф")
                         table.insert(trackedWardrobes, main)
                     end
                 end
+            end
+        end
+        
+        -- Поиск шкафов напрямую в комнате
+        for _, child in pairs(container:GetChildren()) do
+            if child:IsA("Model") and 
+               (child.Name == "Wardrobe" or 
+                child.Name == "Closet" or 
+                child.Name:find("Wardrobe") or 
+                child.Name:find("Closet")) then
+                
+                local main = child:FindFirstChild("Main") or 
+                            child:FindFirstChild("Handle") or 
+                            child:FindFirstChildWhichIsA("BasePart")
+                
+                if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
+                    createESP(main, Color3.fromRGB(224, 145, 76), "Шкаф")
+                    table.insert(trackedWardrobes, main)
+                end
+            end
+        end
+    end
+    
+    -- Поиск в CurrentRooms (Отель)
+    local currentRooms = Workspace:FindFirstChild("CurrentRooms")
+    if currentRooms then
+        for _, room in pairs(currentRooms:GetChildren()) do
+            searchInContainer(room)
+        end
+    end
+    
+    -- Поиск в The Mines (Шахты)
+    local mines = Workspace:FindFirstChild("Mines") or Workspace:FindFirstChild("TheMines")
+    if mines then
+        searchInContainer(mines)
+    end
+    
+    -- Поиск в The Outdoors (Улица)
+    local outdoors = Workspace:FindFirstChild("Outdoors") or Workspace:FindFirstChild("TheOutdoors")
+    if outdoors then
+        searchInContainer(outdoors)
+    end
+    
+    -- Поиск в The Rooms (Комнаты)
+    local rooms = Workspace:FindFirstChild("Rooms") or Workspace:FindFirstChild("TheRooms")
+    if rooms then
+        searchInContainer(rooms)
+    end
+    
+    -- Поиск в The Backdoors (Задние двери)
+    local backdoors = Workspace:FindFirstChild("Backdoors") or Workspace:FindFirstChild("TheBackdoors")
+    if backdoors then
+        searchInContainer(backdoors)
+    end
+    
+    -- Поиск шкафов прямо в Workspace (на случай, если они там)
+    for _, child in pairs(Workspace:GetChildren()) do
+        if child:IsA("Model") and 
+           (child.Name == "Wardrobe" or 
+            child.Name == "Closet" or 
+            child.Name:find("Wardrobe") or 
+            child.Name:find("Closet")) then
+            
+            local main = child:FindFirstChild("Main") or 
+                        child:FindFirstChild("Handle") or 
+                        child:FindFirstChildWhichIsA("BasePart")
+            
+            if main and main:IsA("BasePart") and not main:FindFirstChild("ESPBox") then
+                createESP(main, Color3.fromRGB(224, 145, 76), "Шкаф")
+                table.insert(trackedWardrobes, main)
             end
         end
     end
@@ -280,7 +363,7 @@ local function updateESP()
                     local door = room:FindFirstChild("Door")
                     if door and door.PrimaryPart and not door.PrimaryPart:FindFirstChild("ESPBox") then
                         local roomNum = tonumber(room.Name) or 0
-                        createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), "Дверь " .. (roomNum + 1), 1)
+                        createESP(door.PrimaryPart, Color3.fromRGB(100, 255, 100), tostring(roomNum + 1), 1)
                     end
                 end
             else
@@ -565,7 +648,7 @@ AuthorTab:CreateButton({
             setclipboard("https://t.me/MakeinuHub")
             Rayfield:Notify({
                 Title = "Скопировано",
-                Content = "Надеюсь ты оформил подписку!",
+                Content = "Надеюсь ты подпишешься на ТГК! <3",
                 Duration = 3,
                 Image = 4483362458
             })
@@ -580,9 +663,6 @@ AuthorTab:CreateButton({
     end,
 })
 
-AuthorTab:CreateLabel("Автор и создатель:")
-AuthorTab:CreateLabel("ТГК: @MakeinuHub")
-
 LocalPlayer.CharacterAdded:Connect(function()
     wait(1)
     local char = LocalPlayer.Character
@@ -595,7 +675,7 @@ LocalPlayer.CharacterAdded:Connect(function()
 end)
 
 Rayfield:Notify({
-    Title = "Shumakku",
+    Title = "Shumakku (DOORS)",
     Content = "ТГК: @MakeinuHub",
     Duration = 8,
     Image = 4483362458
